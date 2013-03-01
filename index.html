@@ -6,6 +6,7 @@
     <title>yaskef by electrolinux</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/lightbox.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/respond.js"></script>
     <!--[if lt IE 9]>
@@ -14,6 +15,15 @@
     <!--[if lt IE 8]>
     <link rel="stylesheet" href="stylesheets/ie.css">
     <![endif]-->
+    <style type="text/css">
+        .disclaimer {
+            font-weight: bold;
+            padding:3%;
+            background-color: yellow;
+            color: red;
+            border:2px solid;
+        }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
   </head>
@@ -46,17 +56,34 @@ in db for later use, etc.</p>
 
 <h2>Screenshots</h2>
 
-<p>(coming soon)</p>
+    <div class="example">
+				<a rel="lightbox[shot]" href="images/phplive-01.png"  title="PhpLive! is cool ;-)">
+					<img src="images/phplive-01-thumb.png" alt="PhpLive! is cool screenshot">
+				</a>
+				<a rel="lightbox[shot]" href="images/phplive-02.png" title="Minimalist Javascript...">
+					<img src="images/phplive-02-thumb.png" alt="Minimalist Javascript">
+				</a>
+				<a rel="lightbox[shot]" href="images/phplive-03.png" title="Testing SQL...">
+					<img src="images/phplive-03-thumb.png" alt="Testing SQL">
+				</a>
+	</div>
 
 <h2>Installation</h2>
 
 <ul>
-<li>with git</li>
-</ul><div class="highlight"><pre>git clone https://github.com/electrolinux/yaskef PATH/TO/YOUR/APP
+
+    <li>with composer:
+    <div class="highlight"><pre>php composer.phar -s dev create-project electrolinux/yaskef PATH/TO/YOUR/APP
+</pre></div></li>
+
+    <li>with git:
+    <div class="highlight"><pre>git clone https://github.com/electrolinux/yaskef PATH/TO/YOUR/APP
 <span class="nb">cd </span>PATH/TO/YOUR/APP
 curl -s http://getcomposer.org/installer | php
 php composer.phar install
-</pre></div>
+</pre></div></li>
+
+</ul>
 
 <h2>Quick Start Guide</h2>
 
@@ -70,12 +97,21 @@ php console snippet:load --force
 
 <p>Configure your web server, pointing the DocumentRoot to PATH/TO/YOUR/APP/web</p>
 
+<h2>BIG Disclaimer !!</h2>
+
+<div class="disclaimer">Please, don't use it on your production server !!<br/>
+
+</div>
+
+<p></p>
+
 <p>For more informations about the Silex-Kitchen-Edition, see the
 <a href="http://lyrixx.github.com/Silex-Kitchen-Edition"><strong>dedicated page</strong></a>.</p>
       </section>
 
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+    <script src="javascripts/lightbox.js"></script>
+
   </body>
 </html>
