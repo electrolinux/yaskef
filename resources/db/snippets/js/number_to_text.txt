@@ -1,0 +1,55 @@
+</script>
+<label for="number">Number</label><input name="number" id="number" value="128"/>
+<input type="button" onClick="ConvertNumber();" value="Convert" />
+<pre id="console"></pre>
+<script type="text/javascript">
+/*--------------------------------------------*
+ http://pastebin.com/ryd76z3r
+ Write a script that converts a number in the range [0...999] to a text corresponding to its
+ English pronunciation. Examples:
+	0 -> "Zero"
+	273 -> "Two hundred seventy three"
+	400 -> "Four hundred"
+	501 -> "Five hundred and one"
+	711 -> "Seven hundred and eleven"
+*----------------------------------------------*/
+function ConvertNumber() {
+    var cons = document.getElementById("console");
+    var numStr = document.getElementById("number").value;
+    var dict = {
+        0: "zero", 1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+        7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve", 13: "thirteen", 14: "fourteen", 15: "fifteen",
+        16: "sixteen", 17: "seventeen", 18: "eighteen", 19: "nineteen", 20: "twenty", 30: "thirty", 40: "forty", 50: "fifty", 60: "sixty",
+        70: "seventy", 80: "eighty", 90: "ninety"
+    };
+    var result = "";
+    if (numStr.length == 3) {
+        result = dict[numStr[0]] + " hundred";
+        numStr = numStr.substring(1);
+        if (numStr == "00") {
+            cons.innerHTML = result;
+            return;
+        }
+    }
+    if (!ExistInDictionary(numStr, dict, cons, result))
+    {
+        //common case
+        if (result.length > 0) {
+            cons.innerHTML = result + " " + dict[(parseInt(numStr[0]) * 10).toString()] +" "+ dict[numStr[1]];
+        } else {
+            cons.innerHTML = dict[(parseInt(numStr[0]) * 10).toString()] + " " + dict[numStr[1]];
+        }
+    }
+}
+function ExistInDictionary(numStr,dict,cons,result)
+{
+    if (numStr in dict) {
+        if (result.length > 0) {
+            cons.innerHTML = result + " and " + dict[numStr];
+        } else {
+            cons.innerHTML = dict[numStr];
+        }
+        return true;
+    }
+}
+ConvertNumber();

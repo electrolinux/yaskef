@@ -28,7 +28,7 @@ $sql = new SnippetSql($db);
 $js = new SnippetJs($db);
 
 foreach ($finder as $file) {
-    $name = str_replace('.txt','',basename($file));
+    $name = str_replace('_',' ',str_replace('.txt','',basename($file)));
     $interp = basename(dirname($file));
     $code = file_get_contents($file);
     echo "$interp: $name\n";

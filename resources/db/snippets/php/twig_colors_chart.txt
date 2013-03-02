@@ -1,0 +1,47 @@
+$color = array();
+$red=0;
+while ($red <= 15) {
+    $green=0;
+    while ($green <= 15) {
+        $blue=0;
+        while ($blue <= 15) {
+            $R=dechex($red).dechex($red);
+            $G=dechex($green).dechex($green);
+            $B=dechex($blue).dechex($blue);
+            $color[]="$R$G$B";
+            $blue += 3;
+        }
+        $green += 3;
+    }
+    $red +=3;
+}
+$tpl="<style type=\"text/css\">
+{% verbatim %}
+table { border-spacing:2px; border-collapse: separate;}
+td { padding:4px; width:100px;font-weight:bold; text-align:center}
+{% endverbatim %}
+{% for x,cl in colors %}
+    td.cl{{ x }} {% verbatim %}{{% endverbatim %}
+        background-color:#{{ cl }};
+    {% verbatim %}}{% endverbatim %}
+{% endfor %}
+</style>
+<table cellpadding=\"2\" cellspacing=\"2\">
+<tr>
+{% set col=0 %}
+{% for x,cl in colors %}
+    <td class=\"cl{{ x }}\">#{{ cl }}</td>
+    {% set col=col+1 %}
+    {% if col > 5 %}
+        </tr>\n<tr>\n
+        {% set col = 0 %}
+    {% endif %}
+{% endfor %}
+</tr>
+</table>
+";
+$env = new \Twig_Environment(new \Twig_Loader_String());
+echo $env->render(
+  $tpl,
+  array("colors" => $color)
+);

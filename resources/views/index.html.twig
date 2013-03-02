@@ -3,8 +3,7 @@
 
 {% block content %}
     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        {% set uname = app.security.getToken().getUsername() %}
-        {% set api_key = app.pastebin.userApiKey(uname) %}
+        {% set api_key = app.pastebin.getApiUserKey() %}
 
         <div class="accordion" id="accordion">
             <div class="accordion-group">
@@ -15,11 +14,12 @@
                 </div>
                 <div id="collapseOne" class="accordion-body collapse in">
                     <div class="accordion-inner cote_code">
-                    <form action="" method="post" novalidate {{ form_enctype(form) }} class="form-horizontal">
+                    <form action="{{ url }}" method="post" novalidate {{ form_enctype(form) }} class="form-horizontal">
                         {{ form_widget(form) }}
                         <div class="form-actions">
                             <button type="submit" name="test" value="test" class="btn btn-primary">{{ 'Test'|trans }}</button>
                             <button type="submit" name="save" value="save" class="btn">{{ 'Save'|trans }}</button>
+                            <button type="submit" name="del" value="del" class="btn">{{ 'Delete'|trans }}</button>
                             {% if api_key %}
                             <button type="submit" name="pastebin" value="pastebin" class="btn">{{ 'Paste to pastebin.com'|trans }}</button>
                             {% endif %}
@@ -54,25 +54,34 @@
 {% block javascript %}
 {{ parent() }}
 {% if snippets|length %}
-{% raw %}
 <script type="text/javascript">
-		$(document).ready(function () {
-{% endraw %}
-			codes=Array();
+{% verbatim %}
+    $(document).ready(function () {
+{% endverbatim %}
+        codes=Array();
 {% for k,v in snippets %}
-			codes['{{ k }}']='{{ v|raw }}';
+        codes["{{ k }}"]="{{ v|raw }}";
 {% endfor %}
 
-{% raw %}
-			$("#form_snippet").change(function()
-            {
-					var key = $("#form_snippet").val();
-					$("#form_code").text(codes[key]);
-					$("#form_name").val(key);
-				});
-			});
+{% verbatim %}
+        $("#form_snippet").change(function()
+        {
+            var key = $("#form_snippet").val();
+            $("#form_code").text(codes[key]);
+            $("#form_name").val(key);
+        });
 
+        function load(idx) {
+            $("#form_snippet").prop('selectedIndex',idx).change();
+        }
+
+{% endverbatim %}
+    {% if index > 0 %}
+        load({{ index }});
+    {% endif %}
+{% verbatim %}
+});
+{% endverbatim %}
 </script>
-{% endraw %}
 {% endif %}
 {% endblock %}

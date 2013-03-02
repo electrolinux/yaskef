@@ -27,7 +27,8 @@
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
-                <a class="brand" href="{{ path('homepage') }}">{{ 'PHP Live !'|trans }}</a>
+                <a class="brand" href="{{ path('homepage') }}"
+                    title="Yet Another Silex-Kitchen-Edition Fork !">{{ 'Yaskef !'|trans }}</a>
                 <div class="nav-collapse">
                     <ul class="nav">
                         <li {% if 'homepage' == active %}class="active"{% endif %}><a href="{{ path('homepage') }}">{{ 'PHP'|trans }}</a></li>
@@ -55,6 +56,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                    <li><a href="{{ path('profile') }}">{{ 'Profile'|trans }}</a></li>
                                     <li><a href="{{ path('logout') }}">{{ 'Logout'|trans }}</a></li>
                                 {% else %}
                                     <li><a href="{{ path('login') }}">{{ 'Login'|trans }}</a></li>

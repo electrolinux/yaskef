@@ -1,9 +1,10 @@
 yaskef - PHP, SQL, Javascript live interpreter
 ===============================================
 
-Based on a fork of the [Silex-Kitchen-Edition](http://lyrixx.github.com/Silex-Kitchen-Edition), yaskef is a developper
+Based on a fork of the [Silex-Kitchen-Edition](http://lyrixx.github.com/Silex-Kitchen-Edition),
+yaskef (Yet Another Silex-Kitchen-Edition Fork) is a developper
 utility to quickly test PHP, SQL and Javascript snippets, saving them
-in db for later use, etc.
+in db for later use, sending them on pastebin.com, etc.
 
 For more information, see the [**dedicated page**](http://electrolinux.github.com/yaskef).
 
@@ -35,6 +36,14 @@ php console doctrine:database:create
 php console doctrine:schema:load
 php console user:create
 php console snippet:load --force
+```
+
+If running on linux with sqlite3 db, ensure that the web user has write access both to
+the database file and his folder. For example :
+
+```
+chgrp -R www-data resources/db
+chmod -R g+w resources/db
 ```
 
 Configure your web server, pointing the DocumentRoot to PATH/TO/YOUR/APP/web

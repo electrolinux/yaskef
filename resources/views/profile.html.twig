@@ -1,0 +1,30 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'profile' %}
+
+{% block content %}
+
+    <h2>{{ user.getUsername() ~ "'s profile"|trans }}</h2>
+
+    <form action="{{ path('profile') }}" method="post" novalidate class="form-vertical">
+        {{ error|default('') }}
+        <label for="_password">Password:</label>
+        {{ form_widget(form.password) }}
+        <fieldset><legend>Pastebin.com infos</legend>
+
+        <label for="pb_username">Username:</label>
+        {{ form_widget(form.pb_username) }}
+
+        <label for="pb_password">Password:</label>
+        {{ form_widget(form.pb_password) }}
+
+        <label for="pb_api_key">Api Key:</label>
+        {{ form_widget(form.pb_api_key) }}
+
+        </fieldset>
+        {{ form_rest(form) }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ 'Save'|trans }}</button>
+        </div>
+    </form>
+
+{% endblock %}

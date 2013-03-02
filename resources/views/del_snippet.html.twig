@@ -1,0 +1,16 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'profile' %}
+
+{% block content %}
+
+    <h2>{{ 'Please confirm snippet deletion'|trans }}</h2>
+
+    <h4>{{ interp }} Snippet name : {{ name }}</h4>
+    <form action="{{ path('del_snippet',{'interp':interp,'name':name}) }}" method="post" novalidate class="form-vertical">
+        {{ form_widget(form) }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ 'Yes, delete this snippet'|trans }}</button>
+        </div>
+    </form>
+
+{% endblock %}

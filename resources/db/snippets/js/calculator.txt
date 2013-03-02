@@ -1,0 +1,105 @@
+// http://pastebin.com/0NGGSBB9
+// Javascript calculator by TK104
+</script>
+    <style>
+        .body {
+            font-family: "Segoe UI", Verdana, sans-serif;
+            color: #333333;
+        }
+        .wrapper {
+            width: 42em;
+            margin: 0 auto;
+        }
+        .wrapper h1 {
+            font-size: 250%;
+            color: #1A1A1A;
+            font-weight: 300;
+            border-bottom: 0.1em solid #65D66C;
+        }
+        .wrapper input, .wrapper select, .equal {
+            font-size: 125%;
+            margin-right: 0.5em;
+        }
+        .wrapper input[type="text"] {
+            width: 3em;
+            border: 1px solid rgba(0, 0, 0, 0.27);
+            padding: 4px 8px;
+        }
+        .wrapper select {
+            border: 1px solid rgba(0, 0, 0, 0.27);
+        }
+        #result {
+            width: 4em;
+        }
+        .wrapper .button {
+            background-color: #65D66C;
+            color: white;
+            padding: 4px 8px;
+            font-size: 1em;
+            font-weight: normal;
+            border: none;
+            width: 6em;
+        }
+        .wrapper .button:hover {
+            cursor: pointer;
+        }
+        .wrapper .button:active {
+            background-color: black;
+        }
+        .wrapper input[type="reset"] {
+            width: 5em;
+        }
+    </style>
+<div class="body">
+<div class="wrapper">
+    <h1>JavaScript Calculator</h1>
+    <form onsubmit="return false;">
+        <input type="text" id="number1">
+        <select id="operation" onkeyup="calculate();">
+            <option>+</option>
+            <option>&#8722;</option>
+            <option>&#215;</option>
+            <option>&#247;</option>
+        </select>
+        <input type="text" id="number2">
+        <span class="equal">=</span>
+        <input type="text" id="result">
+        <input type="submit" onclick="calculate();" value="Calculate"
+               class="button">
+        <input type="reset" class="button" value="Reset">
+    </form>
+</div>
+</div>
+<script>
+    function $_(id) { return document.getElementById(id); }
+
+    function calculate() {
+        var n1 = parseFloat($_("number1").value),
+            n2 = parseFloat($_("number2").value),
+            operation = $_("operation").selectedIndex;
+
+        if (isNaN(n1) || isNaN(n2)) {
+            alert("Unable to complete operation.\n" + n1 + "\n" + n2);
+        } else {
+            switch (operation) {
+            case 0:
+                $_("result").value = n1 + n2;
+                break;
+            case 1:
+                $_("result").value = n1 - n2;
+                break;
+            case 2:
+                $_("result").value = n1 * n2;
+                break;
+            case 3:
+                if (n2 === 0) {
+                    alert("Unable to complete operation.");
+                } else {
+                    $_("result").value = n1 / n2;
+                }
+                break;
+            default:
+                alert("Default: Something went wrong.\nindex = " + operation);
+            }
+        }
+    }

@@ -72,9 +72,10 @@ $app['security.role_hierarchy'] = array(
 );
 
 $app['pastebin'] = $app->share(function() use ($app) {
-    return new Oclane\PasteBin($app['db']);
+    return new Oclane\PasteBin($app);
 });
 
+/*
 $app['user_api_key'] = $app->share(function() use ($app) {
     $api_key = false;
     $token = $app['security']->getToken();
@@ -84,3 +85,7 @@ $app['user_api_key'] = $app->share(function() use ($app) {
     }
     return $api_key;
 });
+*/
+define('CR',"\r");
+define('LF',"\n");
+define('CRLF',CR . LF);

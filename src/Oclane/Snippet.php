@@ -108,29 +108,6 @@ class Snippet
         }
     }
 
-    public function del($name)
-    {
-        $db = $this->db;
-        try {
-            $qname = $db->quote($name);
-            $qinterp = $this->qinterp;
-            $res = $db->executeQuery("DELETE FROM snippet WHERE name=$qname AND interp=$qinterp");
-            if($res)
-
-                return True;
-            else {
-                $errinfo = $db->errorInfo();
-                $this->_error = '['.$errinfo[0].'] ('.$errinfo[1].') '.$errinfo[2].'.';
-
-                return FALSE;
-            }
-        } catch (DBALException $e) {
-            $this->_error = $e->getMessage();
-
-            return FALSE;
-        }
-    }
-
     protected function getError()
     {
         return $this->_error;
@@ -149,7 +126,7 @@ class Snippet
             if (strlen($_name) > 20) {
                 $parts = explode("\n",wordwrap($_name, 20, "\n", 1));
                 $_name = $parts[0];
-                if (false) {
+                if (true) {
                     echo '<!-- $parts: ' ."\n";
                     var_dump($parts);
                     echo '$_name : ' . "$_name -->\n";
@@ -160,5 +137,13 @@ class Snippet
         }
 
         return array($options,$snippets);
+    }
+
+    public function deleteSnippet($name,$interp)
+    {
+        if ($interp != $this->interp) {
+            throw new \Exception('Incorrect interp flag');
+        }
+        return $this->db->delete('snippet',array('interp' => $interp,'name'=>$name));
     }
 }
