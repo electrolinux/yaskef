@@ -26,7 +26,7 @@ class Interpreter
         $code = preg_replace('/\?>$/','',$code);
         if ($this->canBeChecked($code,'?>') === false) {
             $msg = $this->app['translator']->trans('Closing php tag, use or namespace found. Syntax check disabled.');
-            $this->app['session']->setFlash('warning',$msg);
+            $this->app['session']->getFlashBag()->add('warning',$msg);
             $errors = false;
         } else {
             $errors = $this->phpSyntaxError($code);

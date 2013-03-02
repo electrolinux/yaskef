@@ -106,7 +106,7 @@ class PasteBin
                 }
             }
         } catch (\Exception $e) {
-            $this->app['session']->setFlash('error',$e->getMessage());
+            $this->app['session']->getFlashBag()->add('error',$e->getMessage());
         }
         return $this;
     }
@@ -182,7 +182,7 @@ class PasteBin
                 // chance there is no entry in pastebin yet
                 if (!$this->user_id) {
                     $msg = $this->app['translator']->trans('No user associated with this PasteBin');
-                    $this->app['session']->setFlash('error',$msg);
+                    $this->app['session']->getFlashBag()->add('error',$msg);
                     return false;
                 }
                 $this->db->insert('pastebin', array(
@@ -204,7 +204,7 @@ class PasteBin
             }
             $this->app['session']->remove('pb_api_user_key');
         } catch(\Exception $e) {
-            $this->app['session']->setFlash('error',$e->getMessage());
+            $this->app['session']->getFlashBag()->add('error',$e->getMessage());
         }
     }
 }

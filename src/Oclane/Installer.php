@@ -92,7 +92,7 @@ class Installer implements ControllerProviderInterface
             ->add('password','text')
         ->getForm();
         if ('POST' === $app['request']->getMethod()) {
-            $form->bindRequest($app['request']);
+            $form->bind($app['request']);
 
             if ($form->isValid()) {
                 $driver = $form->get('driver')->getData();
@@ -122,7 +122,7 @@ class Installer implements ControllerProviderInterface
         $form = $app['form.factory']->createBuilder('form')
             ->getForm();
         if('POST' === $app['request']->getMethod()) {
-            $form->bindRequest($app['request']);
+            $form->bind($app['request']);
             if ($form->isValid()) {
                 if (!$this->haveDb($app)) {
                     die('no db');
@@ -131,7 +131,7 @@ class Installer implements ControllerProviderInterface
                     }
                 } else {
                     $msg = $app['translator']->trans("Database already created.");
-                    $app['session']->setFlash('success',$msg);
+                    $app['session']->getFlashBag()->add('success',$msg);
                     return $app->redirect($app['url_generator']->generate('install',array('step' => 'schemaload')));
                 }
             }
@@ -152,7 +152,7 @@ class Installer implements ControllerProviderInterface
         $form = $app['form.factory']->createBuilder('form')
             ->getForm();
         if('POST' === $app['request']->getMethod()) {
-            $form->bindRequest($app['request']);
+            $form->bind($app['request']);
             if ($form->isValid()) {
                 if ($this->loadSchema($app)) {
                     return $app->redirect($app['url_generator']->generate('install',array('step'=>'userconfig')));
@@ -202,7 +202,7 @@ class Installer implements ControllerProviderInterface
         ;
 
         if ('POST' === $app['request']->getMethod()) {
-            $form->bindRequest($app['request']);
+            $form->bind($app['request']);
 
             if ($form->isValid()) {
                 // set and redirect
@@ -246,10 +246,10 @@ class Installer implements ControllerProviderInterface
                     ));
                 }
 
-                $app['session']->setFlash('success', $app['translator']->trans('First User configured ok.'));
+                $app['session']->getFlashBag()->add('success', $app['translator']->trans('First User configured ok.'));
                 return $app->redirect($app['url_generator']->generate('homepage'));
             } else {
-                $app['session']->setFlash('error', $app['translator']->trans('Error processing your data !!'));
+                $app['session']->getFlashBag()->add('error', $app['translator']->trans('Error processing your data !!'));
             }
         }
 
@@ -305,7 +305,7 @@ class Installer implements ControllerProviderInterface
 EOM;
                 fwrite($fp,$code);
                 fclose();
-                $app['session']->setFlash('success','Database configuration file written');
+                $app['session']->getFlashBag()->add('success','Database configuration file written');
                 return true;
             }
         } else {
@@ -316,7 +316,7 @@ EOM;
                 $msg .= "<li>$error</li>";
             }
             $msg .= '</ul>';
-            $app['session']->setFlash('error',$msg);
+            $app['session']->getFlashBag()->add('error',$msg);
             return  false;
         }
     }
@@ -400,11 +400,11 @@ EOM;
                 "DB Error while creating database '<b>%error%</b>'",
                 array('%error%' => $e->getMessage())
                 );
-            $app['session']->setFlash('error',$msg);
+            $app['session']->getFlashBag()->add('error',$msg);
             return false;
         }
         $msg = $app['translator']->trans("Database '%name%' created.", array('%name%'=>$name));
-        $app['session']->setFlash('success',$msg);
+        $app['session']->getFlashBag()->add('success',$msg);
         return true;
     }
 
@@ -422,10 +422,10 @@ EOM;
                 "DB Error while loading schema '<b>%error%</b>'",
                 array('%error%' => $e->getMessage())
                 );
-            $app['session']->setFlash('error',$msg);
+            $app['session']->getFlashBag()->add('error',$msg);
             return false;
         }
-        $app['session']->setFlash('success','Database schema loaded.');
+        $app['session']->getFlashBag()->add('success','Database schema loaded.');
         return true;
     }
 }

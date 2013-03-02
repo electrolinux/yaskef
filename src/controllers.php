@@ -188,7 +188,7 @@ $app->match('/{_locale}/translations', function() use ($app) {
         ->getForm();
 
     if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
+        $form->bind($app['request']);
 
         if ($form->isValid()) {
             $translated = $form->get('translations')->getData();
@@ -210,7 +210,7 @@ $app->match('/{_locale}/translations', function() use ($app) {
                     $msg=$app['translator']->trans("Translation '%locale%' saved in %filename%.",array(
                         '%locale%'=>$locale,'%filename%',$filename
                     ));
-                    $app['session']->setFlash('success', $msg);
+                    $app['session']->getFlashBag()->add('success', $msg);
                 } else {
                     $msg = $app['translator']->trans("Can't open file '%filename%' in write mode.",array(
                         '%filename%' => $filename
@@ -218,7 +218,7 @@ $app->match('/{_locale}/translations', function() use ($app) {
                     throw new \Exception($msg);
                 }
             } catch (\Exception $e) {
-                $app['session']->setFlash('error', $e->getMessage());
+                $app['session']->getFlashBag()->add('error', $e->getMessage());
             }
         }
     }
@@ -246,13 +246,13 @@ $app->match('/{_locale}/encode', function() use ($app) {
     ;
 
     if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
+        $form->bind($app['request']);
 
         if ($form->isValid()) {
 
             $password = $form->get('password')->getData();
             $encoded = $app['security.encoder.digest']->encodePassword($password, '');
-            $app['session']->setFlash('success', 'Encoded: ' . $encoded);
+            $app['session']->getFlashBag()->add('success', 'Encoded: ' . $encoded);
         }
     }
 
@@ -363,7 +363,7 @@ $app->match('/{_locale}/profile', function() use ($app) {
     ;
 
     if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
+        $form->bind($app['request']);
 
         if ($form->isValid()) {
             // set and redirect
@@ -373,7 +373,7 @@ $app->match('/{_locale}/profile', function() use ($app) {
                 $app['db']->update('users',array('password'=>$encoded),
                     array('username' => $user->getUsername())
                 );
-                $app['session']->setFlash('success', $app['translator']->trans('Password changed'));
+                $app['session']->getFlashBag()->add('success', $app['translator']->trans('Password changed'));
             }
             $changed = false;
             foreach(array('username','password','api_key','exposure','expiration') as $key) {
@@ -384,13 +384,13 @@ $app->match('/{_locale}/profile', function() use ($app) {
             }
             if ($changed) {
                 $app['pastebin']->updateUser($username,$password,$api_key,$exposure,$expiration);
-                $app['session']->setFlash('success', $app['translator']->trans('Modifications saved'));
+                $app['session']->getFlashBag()->add('success', $app['translator']->trans('Modifications saved'));
             } else {
-                $app['session']->setFlash('info', $app['translator']->trans('No pastebin.com profile infos changed'));
+                $app['session']->getFlashBag()->add('info', $app['translator']->trans('No pastebin.com profile infos changed'));
             }
             return $app->redirect($app['url_generator']->generate('homepage'));
         } else {
-            $app['session']->setFlash('error', $app['translator']->trans('Error processing your data !!'));
+            $app['session']->getFlashBag()->add('error', $app['translator']->trans('Error processing your data !!'));
         }
     }
 
@@ -437,7 +437,7 @@ $app->match('/{_locale}/delete_snippet', function() use ($app) {
         ->getForm()
     ;
     if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
+        $form->bind($app['request']);
 
         if ($form->isValid()) {
             // set and redirect
@@ -448,10 +448,10 @@ $app->match('/{_locale}/delete_snippet', function() use ($app) {
                 '%lang%' => $lang,
                 '%name%'=>$name
             ));
-            $app['session']->setFlash('success', $msg);
+            $app['session']->getFlashBag()->add('success', $msg);
             return $app->redirect($app['url_generator']->generate($lang));
         } else {
-            $app['session']->setFlash('error', $app['translator']->trans('Error deleting snippet !!'));
+            $app['session']->getFlashBag()->add('error', $app['translator']->trans('Error deleting snippet !!'));
         }
     }
 
@@ -492,15 +492,15 @@ $app->get('/{_locale}/clearcache', function() use ($app) {
     }
     if (!empty($out)) {
         $msg = $app['translator']->trans('Files deleted');
-        $app['session']->setFlash('info',"<b>$msg</b>:<br/>$out");
+        $app['session']->getFlashBag()->add('info',"<b>$msg</b>:<br/>$out");
     }
     if (!empty($err)) {
         $msg1 = $app['translator']->trans('Files not deleted');
         $msg2 = $app['translator']->trans('Cache not completely cleared');
-        $app['session']->setFlash('error',"<b>$msg1</b><br/>:$err");
-        $app['session']->setFlash('warn', $msg2);
+        $app['session']->getFlashBag()->add('error',"<b>$msg1</b><br/>:$err");
+        $app['session']->getFlashBag()->add('warn', $msg2);
     } else {
-        $app['session']->setFlash('success', $app['translator']->trans('Cache have been cleared'));
+        $app['session']->getFlashBag()->add('success', $app['translator']->trans('Cache have been cleared'));
     }
     return($app->redirect($app['url_generator']->generate('homepage')));
 })

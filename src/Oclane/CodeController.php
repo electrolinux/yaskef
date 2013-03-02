@@ -58,7 +58,7 @@ class CodeController implements ControllerProviderInterface
                 $result = '(empty result)';
             }
             if (!empty($error)) {
-                $this->app['session']->setFlash('error', "<b>$error</b>");
+                $this->app['session']->getFlashBag()->add('error', "<b>$error</b>");
             }
         } elseif ($lang == 'js') {
             $result = $interp->evalJs($code,$html);
@@ -136,7 +136,7 @@ class CodeController implements ControllerProviderInterface
         }
         $form = $this->createForm($options,$lang);
         if ('POST' === $app['request']->getMethod()) {
-            $form->bindRequest($app['request']);
+            $form->bind($app['request']);
 
             if ($form->isValid()) {
                 if ($lang == 'php') {
@@ -162,32 +162,32 @@ class CodeController implements ControllerProviderInterface
                     if (!empty($name) && !empty($code)) {
                         $snippet->add($name,$code,$comment,$html);
                         $resultat=$app['translator']->trans("snippet '%name%' saved.",array('%name%'=>$name));
-                        $app['session']->setFlash('success', $resultat);
+                        $app['session']->getFlashBag()->add('success', $resultat);
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
                         $msg = $app['translator']->trans("Can't save without 'name' and 'code' !!");
-                        $app['session']->setFlash('error', $msg);
+                        $app['session']->getFlashBag()->add('error', $msg);
                     }
                 } elseif ($pastebin) {
                     if (!empty($code)) {
                         $pb = $app['pastebin'];
                         $resultat = $pb->postCode($lang,$code,$name,$html);
                         if (preg_match('/^Bad API request/',$resultat)) {
-                            $app['session']->setFlash('error', $resultat);
+                            $app['session']->getFlashBag()->add('error', $resultat);
                         } else {
-                            $app['session']->setFlash('success', "<a href=\"$resultat\">$resultat</a>");
+                            $app['session']->getFlashBag()->add('success', "<a href=\"$resultat\">$resultat</a>");
                         }
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
                         $msg = $app['translator']->trans("Can't paste to pastebin without 'code' !!");
-                        $app['session']->setFlash('error', $msg);
+                        $app['session']->getFlashBag()->add('error', $msg);
                     }
                 } elseif ($del) {
                     if (empty($name)) {
                         $msg = $app['translator']->trans("Can't delete without 'name' !!");
-                        $app['session']->setFlash('error', $msg);
+                        $app['session']->getFlashBag()->add('error', $msg);
                     } else {
                         $url = $app['url_generator']->generate('del_snippet',
                             array(
