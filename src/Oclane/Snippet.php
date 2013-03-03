@@ -10,8 +10,8 @@ use Doctrine\DBAL\DBALException;
 class Snippet
 {
     protected $db;
-    protected $interp = 'php';
-    protected $qinterp;
+    protected $lang = 'php';
+    protected $qlang = null;
     protected $name = 'PHP';
 
     protected $_error;
@@ -19,16 +19,16 @@ class Snippet
     public function __construct($db)
     {
         $this->db = $db;
-        $this->qinterp = $db->quote($this->interp);
+        $this->qlang = $db->quote($this->lang);
     }
 
     public function getAll()
     {
         $db = $this->db;
-        $qinterp = $this->qinterp;
+        $qlang = $this->qlang;
         try {
-            $res = $db->fetchAll("SELECT id, name, code, rows, comment
-                FROM snippet WHERE interp=$qinterp ORDER BY name");
+            $res = $db->fetchAll("SELECT id, name, code, rows, comment, html
+                FROM snippet WHERE lang=$qlang ORDER BY name");
             if ($res) {
                 return $res;
             }
@@ -42,56 +42,48 @@ class Snippet
         }
     }
 
-    public function add($name,$code,$comment='')
+    public function add($name,$code,$comment='',$html='')
     {
         $db = $this->db;
         $qname = $db->quote($name);
-        $qinterp = $this->qinterp;
+        $qlang = $this->qlang;
         $qcode = $db->quote($code);
-        $qcomment = $db->quote($comment);
+        $qcomment = empty($comment) ? 'NULL' : $db->quote($comment);
+        $qhtml = empty($html) ? 'NULL' : $db->quote($html);
         $lignes = preg_split("/(\n|\r)+/",$code);
         $rows=count($lignes);
-        if (false) {
-            $safe_lignes = array_map('addslashes',$rows);
-            $js = "xxx='".implode('\n',$safe_lignes)."';\n";
-            print("<pre>code=[ $code ]\n----\nqcode=[ $qcode ]\n----\njs=[ ".$js." ]\n");
-            $q2 = $db->quote(preg_replace("/(\n|\r)+/","\r",$code));
-            $lignes = preg_split("/(\n|\r)+/",$q2);
-            $safe_lignes = array_map('addslashes',$lignes);
-            $js = "xxx='".implode('\n',$safe_lignes)."';\n";
-            print("q2=[ $q2 ]\n----\njs2=[ ".$js." ]\n");
-            die('</pre>');
-        }
         try {
             $res = $db->executeQuery("INSERT INTO snippet
-                (name,interp,code,rows,comment)
-                VALUES ($qname,$qinterp,$qcode,$rows,$qcomment)");
+                (name,lang,code,rows,comment,html)
+                VALUES ($qname,$qlang,$qcode,$rows,$qcomment,$qhtml)");
             if ($res) {
-                return True;
+                return true;
             } elseif ($res === false) {
-                return $this->modif($name,$interp,$code,$comment);
+                return $this->modif($name,$code,$comment,$html);
             }
         } catch (DBALException $e) {
             //$this->_error = $e->getMessage();
             //return FALSE;
-            return $this->modif($name,$code,$comment);
+            return $this->modif($name,$code,$comment,$html);
         }
     }
 
-    public function modif($name,$code,$comment='')
+    public function modif($name,$code,$comment='',$html='')
     {
         $db = $this->db;
         try {
             $qname = $db->quote($name);
-            $qinterp = $this->qinterp;
+            $qlang = $this->qlang;
             $qcode = $db->quote($code);
-            $qcomment = $db->quote($comment);
+            $qcomment = empty($comment) ? null : $db->quote($comment);
+            $qhtml = empty($html) ? null : $db->quote($html);
             $_rows = preg_split("/(\n|\r)+/",$code);
             $rows=count($_rows);
             $res = $db->executeUpdate("UPDATE snippet
                 SET code = $qcode, rows = $rows,
-                comment = $qcomment
-                WHERE name = $qname AND interp = $qinterp");
+                comment = $qcomment,
+                html = $qhtml
+                WHERE name = $qname AND lang = $qlang");
             if($res)
 
                 return True;
@@ -119,31 +111,36 @@ class Snippet
         $options=array(''=>$this->name . ' Snippet...');
         foreach ($this->getAll() as $row) {
             $_val = $row['name'];
-            $_text = $row['code'];
-            $rows = preg_split("/(\n|\r)+/",$_text);
-            $safe_rows = array_map('addslashes',$rows);
-            $_name = $safe_rows[0];
-            if (strlen($_name) > 20) {
-                $parts = explode("\n",wordwrap($_name, 20, "\n", 1));
+            $safe_rows = $this->getSafeRows($row['code']);
+            $_name = "$_val: " . $safe_rows[0];
+            if (strlen($_name) > 50) {
+                $parts = explode("\n",wordwrap($_name, 50, "\n", 1));
                 $_name = $parts[0];
-                if (true) {
-                    echo '<!-- $parts: ' ."\n";
-                    var_dump($parts);
-                    echo '$_name : ' . "$_name -->\n";
-                }
             }
-            $options[$_val] = "$_val : $_name";
-            $snippets[$_val]=implode('\n',$safe_rows);
+            $options[$_val] = $_name;
+            $snippets[$_val]=array();
+            $snippets[$_val]['code']=implode('\n',$safe_rows);
+            $snippets[$_val]['html']=implode('\n',$this->getSafeRows($row['html']));
+            $snippets[$_val]['comment']=implode('\n',$this->getSafeRows($row['comment']));
         }
 
         return array($options,$snippets);
     }
 
-    public function deleteSnippet($name,$interp)
+    protected function getSafeRows($text=null)
     {
-        if ($interp != $this->interp) {
-            throw new \Exception('Incorrect interp flag');
+        if (empty($text)) {
+            return array();
         }
-        return $this->db->delete('snippet',array('interp' => $interp,'name'=>$name));
+        $rows = preg_split("/(\n|\r)+/",$text);
+        return array_map('addslashes',$rows);
+    }
+
+    public function deleteSnippet($name,$lang)
+    {
+        if ($lang != $this->lang) {
+            throw new \Exception('Incorrect language option: ' . $lang);
+        }
+        return $this->db->delete('snippet',array('lang' => $lang,'name'=>$name));
     }
 }

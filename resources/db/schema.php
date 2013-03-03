@@ -35,11 +35,12 @@ $snippet = $schema->createTable('snippet');
 $snippet->addColumn('id','integer',array('unsigned'=>true,'autoincrement'=>true));
 $snippet->setPrimaryKey(array('id'));
 $snippet->addColumn('name','string',array('length'=>50));
-$snippet->addColumn('interp', 'string',array('length'=>25, 'default'=> 'php'));
+$snippet->addColumn('lang', 'string',array('length'=>25, 'default'=> 'php'));
 $snippet->addColumn('code', 'text');
+$snippet->addColumn('html', 'text',array('notNull'=>false));
 $snippet->addColumn('rows', 'integer');
 $snippet->addColumn('level', 'integer',array('default'=>0));
 $snippet->addColumn('comment', 'text',array('notNull' => false));
-$snippet->addUniqueIndex(array('name','interp'),'nameinterp_idx');
+$snippet->addUniqueIndex(array('name','lang'),'namelang_idx');
 
 return $schema;

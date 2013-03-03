@@ -48,16 +48,20 @@ class CodeController implements ControllerProviderInterface
         return $snippet;
     }
 
-    protected function evalCode($lang,$code)
+    protected function evalCode($lang,$code,$html='')
     {
         $interp = new Interpreter($this->app);
+        $error='';
         if ($lang == 'php') {
-            $result = $interp->evalPhp($code);
+            $result = $interp->evalPhp($code,$error);
             if (empty($result)) {
-                $result = '<strong>## Error while executing your code !! (empty result)</strong>';
+                $result = '(empty result)';
+            }
+            if (!empty($error)) {
+                $this->app['session']->setFlash('error', "<b>$error</b>");
             }
         } elseif ($lang == 'js') {
-            $result = $interp->evalJs($code);
+            $result = $interp->evalJs($code,$html);
         } elseif ($lang == 'sql') {
             $result = $interp->evalSql($code);
         } else {
@@ -71,7 +75,7 @@ class CodeController implements ControllerProviderInterface
         $form = $this->app['form.factory']->createBuilder('form')
             ->add('code', 'textarea', array(
                     'label'      => 'Code',
-                    'attr' => array('rows'=>10,'style'=>'width:100%')
+                    'attr' => array('rows'=>10,'style'=>'width:98%')
             ));
 
         if ($lang=='php') {
@@ -79,13 +83,19 @@ class CodeController implements ControllerProviderInterface
                 'label' => 'Pre-formatted result'
             ));
         }
-
+        if ($lang=='js') {
+            $form->add('html','textarea', array(
+                'label' => 'html',
+                'attr'  => array('rows'=>6,'style'=>'width:98%')
+            ));
+        }
         $form->add('name','text')
             ->add('snippet', 'choice',  array(
                 'choices'  => $choices,
                 'multiple' => false,
                 'expanded' => false
             ))
+            ->add('comment','textarea')
             ;
         return $form->getForm();
     }
@@ -121,17 +131,23 @@ class CodeController implements ControllerProviderInterface
                 } else {
                     $pre = false;
                 }
+                if ($lang == 'js') {
+                    $html = $form->get('html')->getData();
+                } else {
+                    $html = null;
+                }
                 $code = $form->get('code')->getData();
                 $name = $form->get('name')->getData();
+                $comment = $form->get('comment')->getData();
                 $save = array_key_exists('save',$_POST);
                 $del  = array_key_exists('del',$_POST);
                 $test = array_key_exists('test',$_POST);
                 $pastebin = array_key_exists('pastebin',$_POST);
                 if ($test) {
-                    $resultat = $this->evalCode($lang,$code);
+                    $resultat = $this->evalCode($lang,$code,$html);
                 } elseif ($save) {
                     if (!empty($name) && !empty($code)) {
-                        $snippet->add($name,$code);
+                        $snippet->add($name,$code,$comment,$html);
                         $resultat="snippet '$name' saved";
                         $app['session']->setFlash('success', $resultat);
 
@@ -140,10 +156,9 @@ class CodeController implements ControllerProviderInterface
                         $app['session']->setFlash('error', "Can't save without 'name' and 'code' !!");
                     }
                 } elseif ($pastebin) {
-                    $name = $form->get('name')->getData();
                     if (!empty($code)) {
                         $pb = $app['pastebin'];
-                        $resultat = $pb->postCode($lang,$code,$name);
+                        $resultat = $pb->postCode($lang,$code,$name,$html);
                         if (preg_match('/^Bad API request/',$resultat)) {
                             $app['session']->setFlash('error', $resultat);
                         } else {
@@ -155,8 +170,12 @@ class CodeController implements ControllerProviderInterface
                         $app['session']->setFlash('error', "Can't paste to pastebin without 'code' !!");
                     }
                 } elseif ($del) {
-                    return $app->redirect($app['url_generator']->generate('del_snippet',
-                        array('name' => $name,'lang' => $lang)));
+                    if (empty($name)) {
+                        $app['session']->setFlash('error', "Can't delete without 'name' !!");
+                    } else {
+                        return $app->redirect($app['url_generator']->generate('del_snippet',
+                            array('name' => $name,'lang' => $lang)));
+                    }
                 }
             }
         }

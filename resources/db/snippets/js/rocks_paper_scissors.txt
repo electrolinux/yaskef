@@ -1,7 +1,7 @@
 /* Javascript Rock, Paper, Scissors by TK104
  * http://pastebin.com/n5ysx009
  */
-</script>
+BEGIN_HTML
         <style>
             .body {
                 text-align: center;
@@ -25,7 +25,31 @@
                 color: orange;
             }
         </style>
-        <script>
+        <div class="body">
+        <h1>Let's Play Rock, Paper, Scissors</h1>
+        <h2>Instructions</h2>
+        <p>
+            Click a button to choose what to throw.
+        </p>
+        <p id="controls">
+            <input type="button" value="Rock" onclick="throwHand(1);">
+            <input type="button" value="Paper" onclick="throwHand(2);">
+            <input type="button" value="Scissors" onclick="throwHand(3);">
+        </p>
+        <h3>Score</h3>
+        <ul id="scoreBoard">
+            <li>
+                Wins: <span id="win">0</span>
+            </li>
+            <li>
+                Losses: <span id="lose">0</span>
+            </li>
+            <li>
+                Draws: <span id="draw">0</span>
+            </li>
+        </ul>
+        </div>
+END_HTML
             // Global variables to keep score.
             var wins = 0, losses = 0, draws = 0;
 
@@ -145,28 +169,3 @@
                     msgAlert("lose", player, computer);
                 }
             }
-        </script>
-        <div class="body">
-        <h1>Let's Play Rock, Paper, Scissors</h1>
-        <h2>Instructions</h2>
-        <p>
-            Click a button to choose what to throw.
-        </p>
-        <p id="controls">
-            <input type="button" value="Rock" onclick="throwHand(1);">
-            <input type="button" value="Paper" onclick="throwHand(2);">
-            <input type="button" value="Scissors" onclick="throwHand(3);">
-        </p>
-        <h3>Score</h3>
-        <ul id="scoreBoard">
-            <li>
-                Wins: <span id="win">0</span>
-            </li>
-            <li>
-                Losses: <span id="lose">0</span>
-            </li>
-            <li>
-                Draws: <span id="draw">0</span>
-            </li>
-        </ul>
-        </div>

@@ -45,3 +45,10 @@ echo $env->render(
   $tpl,
   array("colors" => $color)
 );
+BEGIN_COMMENT
+Yes you can use twig and many other silex's component...
+For using the $app var, just declare it global:
+
+global $app;
+echo $app['url_generator']->generate('homepage');
+END_COMMENT

@@ -1,6 +1,6 @@
-// http://pastebin.com/0NGGSBB9
+// pastebin.com/0NGGSBB9
 // Javascript calculator by TK104
-</script>
+BEGIN_HTML
     <style>
         .body {
             font-family: "Segoe UI", Verdana, sans-serif;
@@ -70,7 +70,7 @@
     </form>
 </div>
 </div>
-<script>
+END_HTML
     function $_(id) { return document.getElementById(id); }
 
     function calculate() {

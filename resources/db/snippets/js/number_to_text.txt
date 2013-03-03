@@ -1,10 +1,10 @@
-</script>
+BEGIN_HTML
 <label for="number">Number</label><input name="number" id="number" value="128"/>
 <input type="button" onClick="ConvertNumber();" value="Convert" />
 <pre id="console"></pre>
-<script type="text/javascript">
+END_HTML
 /*--------------------------------------------*
- http://pastebin.com/ryd76z3r
+ pastebin.com/ryd76z3r
  Write a script that converts a number in the range [0...999] to a text corresponding to its
  English pronunciation. Examples:
 	0 -> "Zero"

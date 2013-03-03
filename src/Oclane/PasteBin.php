@@ -115,24 +115,31 @@ class PasteBin
         return $response;
     }
 
-    protected function prepareCode($lang,$code)
+    protected function prepareCode($lang,$code,$html='')
     {
         if($lang == 'php') {
             $s = "<?php\r\n// " . PasteBin::HEAD . "\r\n$code";
         } elseif ($lang == 'js') {
-            $s = "/*\r\n *" . PasteBin::HEAD ." */\r\n\r\n$code";
+            if (!empty($html)) {
+                $s = "/*\r\n * " . PasteBin::HEAD . "\r\n" .
+                " * Html markup for this snippet:\r\n" .
+                "--8<--------\r\n$html\r\n--8<--------\r\n" .
+                " */\r\n\r\n$code";
+            } else {
+                $s = "/*\r\n * " . PasteBin::HEAD ." */\r\n\r\n$code";
+            }
         } elseif ($lang == 'sql') {
             $s = '-- ' . PasteBin::HEAD . "\r\n$code";
         } else {
-            $s='';
+            $s='# ' . PasteBin::HEAD . "\r\n$code";
         }
         return urlencode($s);
     }
 
-    public function postCode($lang,$code,$title='')
+    public function postCode($lang,$code,$title='',$html='')
     {
         $api_dev_key = $this->pb_api_key;
-        $api_paste_code = $this->prepareCode($lang,$code);
+        $api_paste_code = $this->prepareCode($lang,$code,$html);
         $api_paste_private = $this->pb_exposure;
         if (empty($title)) {
             $title='New Pastebin test';

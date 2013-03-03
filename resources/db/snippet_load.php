@@ -29,14 +29,24 @@ $js = new SnippetJs($db);
 
 foreach ($finder as $file) {
     $name = str_replace('_',' ',str_replace('.txt','',basename($file)));
-    $interp = basename(dirname($file));
+    $lang = basename(dirname($file));
     $code = file_get_contents($file);
-    echo "$interp: $name\n";
-    if ($interp == 'php') {
-        $php->add($name,$code);
-    } elseif ($interp == 'sql') {
-        $sql->add($name,$code);
-    } elseif ($interp = 'js') {
-        $js->add($name,$code);
+    $html='';
+    $comment = '';
+    if (preg_match('/^(.*)BEGIN_HTML(.*)END_HTML(.*)$/is',$code,$matches)) {
+        $html = $matches[2];
+        $code = $matches[1] . $matches[3];
+    }
+    if (preg_match('/^(.*)BEGIN_COMMENT(.*)END_COMMENT(.*)$/is',$code,$matches)) {
+        $comment = $matches[2];
+        $code = $matches[1] . $matches[3];
+    }
+    echo "$lang: $name\n";
+    if ($lang == 'php') {
+        $php->add($name,$code,$comment,$html);
+    } elseif ($lang == 'sql') {
+        $sql->add($name,$code,$comment,$html);
+    } elseif ($lang = 'js') {
+        $js->add($name,$code,$comment,$html);
     }
 }

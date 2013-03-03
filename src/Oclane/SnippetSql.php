@@ -7,6 +7,6 @@ namespace Oclane;
 
 class SnippetSql extends Snippet
 {
-    protected $interp = 'sql';
+    protected $lang = 'sql';
     protected $name = 'SQL';
 }

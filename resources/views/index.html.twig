@@ -15,13 +15,26 @@
                 <div id="collapseOne" class="accordion-body collapse in">
                     <div class="accordion-inner cote_code">
                     <form action="{{ url }}" method="post" novalidate {{ form_enctype(form) }} class="form-horizontal">
-                        {{ form_widget(form) }}
+                        <div id="form" class="accordion">
+                            <div class="control-group">
+                                {{ form_widget(form.code) }}
+                            </div>
+                            <div class="accordion-group control-group">
+                                <div class="accordion-heading">
+                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#collapseMore">More</a>
+                                </div>
+                                <div id="collapseMore" class="accordion-body collapse">
+                                    {{ form_rest(form) }}
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
-                            <button type="submit" name="test" value="test" class="btn btn-primary">{{ 'Test'|trans }}</button>
-                            <button type="submit" name="save" value="save" class="btn">{{ 'Save'|trans }}</button>
-                            <button type="submit" name="del" value="del" class="btn">{{ 'Delete'|trans }}</button>
+                            <button type="submit" name="test" value="test" class="btn btn-primary need-code">{{ 'Test'|trans }}</button>
+                            <button type="submit" name="save" value="save" class="btn need-code need-name">{{ 'Save'|trans }}</button>
+                            <button type="submit" name="del" value="del" class="btn need-code need-name">{{ 'Delete'|trans }}</button>
                             {% if api_key %}
-                            <button type="submit" name="pastebin" value="pastebin" class="btn">{{ 'Paste to pastebin.com'|trans }}</button>
+                            <button type="submit" name="pastebin" value="pastebin" class="btn need-code need-name">{{ 'Paste to pastebin.com'|trans }}</button>
                             {% endif %}
                         </div>
                     </form>
@@ -53,15 +66,42 @@
 
 {% block javascript %}
 {{ parent() }}
-{% if snippets|length %}
 <script type="text/javascript">
 {% verbatim %}
     $(document).ready(function () {
+
+        // jquery objects used
+        var $needcode = $("button.need-code"),
+            $needname = $("button.need-name"),
+            $formcode = $("#form_code"),
+            $formname = $("#form_name"),
+            // snippets
+            codes=Array(),
+            htmls=Array(),
+            comments=Array();
+
+        var setEnabled = function() {
+            if($formcode.val() == '') {
+                $needcode.attr('disabled','disabled');
+            } else {
+                $needcode.removeAttr('disabled');
+            }
+            if($formname.val() == '') {
+                $needname.attr('disabled','disabled');
+            } else {
+                $needname.removeAttr('disabled');
+            }
+        };
+
 {% endverbatim %}
-        codes=Array();
-{% for k,v in snippets %}
-        codes["{{ k }}"]="{{ v|raw }}";
-{% endfor %}
+
+{% if snippets|length %}
+    {% for k,v in snippets %}
+        codes["{{ k }}"]="{{ v['code']|raw }}";
+        htmls["{{ k }}"]="{{ v['html']|raw }}";
+        comments["{{ k }}"]="{{ v['comment']|raw }}";
+    {% endfor %}
+{% endif %}
 
 {% verbatim %}
         $("#form_snippet").change(function()
@@ -69,6 +109,9 @@
             var key = $("#form_snippet").val();
             $("#form_code").text(codes[key]);
             $("#form_name").val(key);
+            $("#form_html").text(htmls[key]);
+            $("#form_comment").text(comments[key]);
+            setEnabled();
         });
 
         function load(idx) {
@@ -80,8 +123,18 @@
         load({{ index }});
     {% endif %}
 {% verbatim %}
+
+        // on change
+        $formcode.change(function(){setEnabled();});
+        $formname.change(function(){setEnabled();});
+        // on key up
+        $formcode.keyup(function(){setEnabled();});
+        $formname.keyup(function(){setEnabled();});
+
+        // and right now
+        setEnabled();
+
 });
 {% endverbatim %}
 </script>
-{% endif %}
 {% endblock %}

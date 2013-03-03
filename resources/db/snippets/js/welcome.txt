@@ -1,4 +1,13 @@
-hello = function () {
-  alert('Welcome to Yaskef version 0.1 !');
-}
-setTimeout('hello();',2000);
+BEGIN_HTML
+<div id="hello"><a href="#" id="hellobutton">Hello</a><br/>
+<div style="display:none"><h3>Welcome to yaskef 1.0.0-beta2</h3>
+<p>Thanks you for your time playing with this amusing tool...</p>
+</div>
+<div>
+END_HTML
+$(document).ready(function(){
+    $('#hellobutton').click(function() {$("#hello").find("div:hidden").slideDown("slow"); });
+});
+BEGIN_COMMENT
+Simple jquery test
+END_COMMENT

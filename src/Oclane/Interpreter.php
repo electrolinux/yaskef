@@ -17,27 +17,38 @@ class Interpreter
         $this->app = $app;
     }
 
-    public function evalPhp($code)
+    public function evalPhp($code,&$error)
     {
+        $result='';
         $err_mode = error_reporting();
         error_reporting(E_ALL);
-        $errors = $this->phpSyntaxError($code);
+        if (strpos($code,'?>') !== false or strpos($code, '<?php ') !== false) {
+            $this->app['session']->setFlash('warning','opening or closing php tags, syntax check disabled for mixed content');
+            $errors = false;
+        } else {
+            $errors = $this->phpSyntaxError($code);
+        }
         if ($errors == false) {
             ob_start();
-            eval($code);
-            $resultat = ob_get_contents();
+            $res = eval($this->codeWithReturn($code));
+            //$res = eval($code);
+            $result = ob_get_contents();
+            if ($res === false) {
+                $error = 'Error executing your code';
+            }
             ob_end_clean();
         } else {
             //$s = print_r($errors,true);
-            $resultat = '<h3>Syntax error</h3><div class="error">' .
-                $errors[0] . ' line ' . $errors[1] . "</div>\n";
+            $error = 'Syntax error: ' .
+                $errors[0] . ', line ' . $errors[1];
         }
         error_reporting($err_mode);
-        return ($resultat);
+        return ($result);
     }
 
     /**
      * Check the syntax of some PHP code.
+     * Note: only works for pure PHP (not mixed content)
      * @param string $code PHP code to check.
      * @return boolean|array If false, then check was successful, otherwise an array(message,line) of errors is returned.
      *
@@ -104,10 +115,18 @@ class Interpreter
         return $code;
     }
 
-    public function evalJs($code)
+    private function codeWithReturn($code)
+    {
+        $nbclose = count(explode('?>',$code));
+        $nbopen = count(explode('<?php',$code));
+        $append = $nbclose > $nbopen ? '<?php return true;' : ' ;return true;';
+        return "$code $append";
+    }
+
+    public function evalJs($code,$html='')
     {
         // version minimale
-        return '<script type="text/javascript">' . $code . '</script>';
+        return $html . '<script type="text/javascript">' . $code . '</script>';
     }
 
     public function evalSql($code)

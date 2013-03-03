@@ -10,21 +10,40 @@
     <p>In PHP mode, just type some PHP code in the code field, then click
     "Test" to see the result.
     </p>
+    <pre>echo 'Hello, World!';</pre>
 
-    <p>You don't have to begin your code with the open_tag <code>&lt;?php</code><br/>
-    If you need to put some html, don't forget to leave the PHP mode
-    with <code>?&gt;</code>
+    <p>You don't have to begin your code with the open_tag <code>&lt;?php</code>,
+    as the content of the field is meant to be already in PHP mode.<br/>
+    But if you need to put some html, don't forget to leave the PHP mode
+    with <code>?&gt;</code>.</p>
+    <p class="note"> A final <code>&lt;?php&nbsp;</code> for returning in PHP mode
+    is not mandatory.
+    </p>
+    <pre>echo 'Hello, World';
+?&gt;
+&lt;hr /&gt;
+&lt;a href="http://electrolinux.github.com/yaskef/"&gt;Yaskef is cool&lt;/a&gt;</pre>
+
+    <p class="note">Mixed content is not passed to the minimalistic/simplistic
+    syntax checker.
     </p>
 
     <h3>Javascript snippets</h3>
 
-    <p>As for version 1.0.0betaX, the javascript code is simply put inside
-    a <code>&lt;script type="text/javascript"&gt;</code> tag.
+    <p>
+        The javascript code is simply put inside a
+        <code>&lt;script type="text/javascript"&gt;</code> tag.<br/>
+        If some html is needed, it can be put in the html field, wich is
+        then put just before script tag.
     </p>
 
-    <p>If you need to put some html, don't forget to leave the javascript tag
-    with <code>&lt/script&gt;</code>
+    <p>
+        You can use the preloaded jquery 1.7 in your code.
     </p>
+
+    <pre>$(function(){
+    $("body").css('backgroundColor','#ff9900');
+});</pre>
 
     <h3>SQL snippets</h3>
 
@@ -33,6 +52,7 @@
     The default database is sqlite3. Other doctrine databases have not been
     tested yet.
     </p>
+    <pre>SELECT id,lang,name,rows FROM snippet ORDER BY lang,name;</pre>
 
     <h3>Pastebin</h3>
 
