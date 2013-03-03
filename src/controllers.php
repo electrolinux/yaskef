@@ -4,8 +4,8 @@ namespace Oclane;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Finder\Finder;
 
 //use Oclane\Interpreter;
 //use Oclane\Snippet;
@@ -509,6 +509,39 @@ $app->match('/delete_snippet/{interp}/{name}', function($interp,$name) use ($app
 
 })
 ->bind('del_snippet');
+
+/*--------------------------------------------------------------------*
+ * clear the cache
+ *--------------------------------------------------------------------*/
+$app->get('/clearcache', function() use ($app) {
+    $out = '';
+    $err = '';
+    $finder = new Finder();
+    $finder->files()
+        ->ignoreVCS(true)
+        ->name('*')
+        ->notName('*~')
+        ->in(__DIR__.'/../resources/cache')
+    ;
+    foreach ($finder as $file) {
+        if (unlink($file)) {
+            $out .= "$file<br/>";
+        } else {
+            $err .= "$file</br>";
+        }
+    }
+    if (!empty($out)) {
+        $app['session']->setFlash('info',"<b>Files deleted</b><br/>:$out");
+    }
+    if (!empty($err)) {
+        $app['session']->setFlash('error',"<b>Files not deleted</b><br/>:$err");
+        $app['session']->setFlash('warn', "Cache not completely cleared");
+    } else {
+        $app['session']->setFlash('success', "Cache have been cleared");
+    }
+    return($app->redirect($app['url_generator']->generate('homepage')));
+})
+->bind('clearcache');
 
 /*--------------------------------------------------------------------*
  * debug pastebin

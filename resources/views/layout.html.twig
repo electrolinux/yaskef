@@ -19,6 +19,11 @@
     {% endblock %}
 
     <script src="{{ app.request.basepath }}/js/libs/modernizr-2.5.3-respond-1.1.0.min.js"></script>
+{% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ app.request.basepath }}/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+    <script src="{{ app.request.basepath }}/assets/js/scripts.js"></script>
+{% endblock javascript %}
 </head>
 <body>
 <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
@@ -40,6 +45,7 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
+                            <li><a href="{{ path('clearcache') }}">Clear cache</a></li>
                             <li><a href="{{ path('encode') }}">Password encoder</a></li>
                             <li><a href="{{ path('phpinfo') }}">PHP infos</a></li>
                             </ul>
@@ -84,10 +90,5 @@
             {% endblock %}
         </div>
     </div>
-{% block javascript %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ app.request.basepath }}/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
-    <script src="{{ app.request.basepath }}/assets/js/scripts.js"></script>
-{% endblock javascript %}
 </body>
 </html>
