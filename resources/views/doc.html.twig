@@ -1,0 +1,107 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'doc' %}
+
+{% block content %}
+
+    <h2>{{ 'Yaskef User Guide'|trans }}</h2>
+
+    <h3>PHP snippets</h3>
+
+    <p>In PHP mode, just type some PHP code in the code field, then click
+    "Test" to see the result.
+    </p>
+
+    <p>You don't have to begin your code with the open_tag <code>&lt;?php</code><br/>
+    If you need to put some html, don't forget to leave the PHP mode
+    with <code>?&gt;</code>
+    </p>
+
+    <h3>Javascript snippets</h3>
+
+    <p>As for version 1.0.0betaX, the javascript code is simply put inside
+    a <code>&lt;script type="text/javascript"&gt;</code> tag.
+    </p>
+
+    <p>If you need to put some html, don't forget to leave the javascript tag
+    with <code>&lt/script&gt;</code>
+    </p>
+
+    <h3>SQL snippets</h3>
+
+    <p>Not very well tested, the SQL code is passed to the DBAL implementation
+    choosen in prod.php.<br/>
+    The default database is sqlite3. Other doctrine databases have not been
+    tested yet.
+    </p>
+
+    <h3>Pastebin</h3>
+
+    <p>
+        If you have an account at <a href="http://pastebin.com/">pastebin.com</a>,
+        and have created your user with the --pastebin option, you should have
+        a "Paste to pastebin.com" button.
+    </p>
+
+    <p>
+        You can choose the exposure and expiration you want for your paste
+        by going to the profile page.
+    </p>
+
+    <h3>Profile</h3>
+
+    <p>
+        A part from the pastebin options, the profile page can be used
+        to change your password...
+
+    </p>
+
+    <h3>Credits</h3>
+
+    <p>
+        Software developpement is more and more funny every day, courtesy
+        of a lot of smart people, organisations and projects.<br/>
+        <ul>
+            <li><a href="http://sensiolabs.com/">Sensio Labs</a>, including cool people
+            <ul>
+                <li><a href="https://github.com/fabpot">Fabien Potencier</a></li>
+                <li><a href="https://github.com/igorw">Igor Wiedler</a></li>
+            </ul>
+            and cool tools
+            <ul>
+                <li><a href="http://silex.sensiolabs.org/">Silex</a></li>
+                <li><a href="http://twig.sensiolabs.org/">Twig</a></li>
+                <li><a href="http://symfony.com/">Symfony</a></li>
+            </ul>
+            </li>
+            <li><a href="https://github.com/lyrixx">Grégoire Pineau (lyrixx)</a> and his nice
+            <a href="https://github.com/lyrixx/Silex-Kitchen-Edition">Silex Kitchen Edition</a>
+            </li>
+
+            <li><a href="http://www.doctrine-project.org/">Doctrine</a></li>
+
+            <li><a href="https://github.com/">Github</a> for an impressive amount of
+            good work for the opensource sofware -- thanks to
+            <a href="https://twitter.com/michigangraham">Matt Graham</a> for the nice web site template
+            </li>
+
+            <li><a href="https://packagist.org/">Packagist.com</a></li>
+
+            <li><a href="http://getcomposer.org/">Composer</a></li>
+
+            <li><a href="http://git-scm.com/">GIT</a></li>
+
+            <li>And countless others... Thanks you all opensource devs!!</li>
+        </ul>
+    </p>
+
+    <h3>Contributions Welcome :-)</h3>
+
+    <p>If you find bugs or have cool ideas to implement, let me now.
+    <ul>
+        <li><a href="https://github.com/electrolinux/yaskef">Github repo</a>, star, fork or fill
+        an issue </li>
+        <li><a href="http://electrolinux.github.com/yaskef/">Yaskef Web site</a></li>
+    </ul>
+    </p>
+
+{% endblock %}
