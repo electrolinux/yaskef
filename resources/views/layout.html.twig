@@ -36,8 +36,8 @@
                     title="Yet Another Silex-Kitchen-Edition Fork !">{{ 'Yaskef !'|trans }}</a>
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li {% if 'homepage' == active %}class="active"{% endif %}><a href="{{ path('homepage') }}">{{ 'PHP'|trans }}</a></li>
-                        <li {% if 'jscript' == active %}class="active"{% endif %}><a href="{{ path('jscript') }}">{{ 'Javascript'|trans }}</a></li>
+                        <li {% if 'php' == active %}class="active"{% endif %}><a href="{{ path('php') }}">{{ 'PHP'|trans }}</a></li>
+                        <li {% if 'js' == active %}class="active"{% endif %}><a href="{{ path('js') }}">{{ 'Javascript'|trans }}</a></li>
                         <li {% if 'sql' == active %}class="active"{% endif %}><a href="{{ path('sql') }}">{{ 'SQL'|trans }}</a></li>
                         <li class="dropdown{% if 'tools' == active %} active{% endif %}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

@@ -10,281 +10,14 @@ use Symfony\Component\Finder\Finder;
 //use Oclane\Interpreter;
 //use Oclane\Snippet;
 
+$app->mount('/code', new CodeController());
+
 /*--------------------------------------------------------------------*
- * home (php)
+ * home (redirect to /code)
  *--------------------------------------------------------------------*/
 $app->match('/', function() use ($app) {
-    $snippet = new Snippet($app['db']);
-    list($options,$snippets) = $snippet->getOptionsList();
-    $api_key = $app['pastebin']->getApiUserKey();
-
-    $resultat='';
-    $index=0;
-    if ( ($name = $app['request']->get('name')) ) {
-        $index = array_search($name,array_keys($snippets));
-        $index = $index === false ? 0 : $index+1;
-    }
-    $form = $app['form.factory']->createBuilder('form',array('api_key'=>$api_key))
-        ->add('code', 'textarea', array(
-                'label'      => 'Code',
-                'attr' => array('rows'=>10,'style'=>'width:100%')
-        ))
-        ->add('pre','checkbox',array(
-            'label' => 'Pre-formatted result'
-        ))
-        ->add('name','text')
-        ->add('snippet', 'choice',  array(
-            'choices'  => $options,
-            'multiple' => false,
-            'expanded' => false
-        ))
-        ->add('api_key','hidden')
-        ->getForm()
-    ;
-
-    if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
-
-        if ($form->isValid()) {
-            $interp = new Interpreter($app);
-            $pre = $form->get('pre')->getData();
-            $code = $form->get('code')->getData();
-            $key = $form->get('api_key')->getData();
-            $save = array_key_exists('save',$_POST);
-            $test = array_key_exists('test',$_POST);
-            $pastebin = array_key_exists('pastebin',$_POST);
-            if ($test) {
-                $resultat = $interp->evalPhp($code);
-                if (empty($resultat)) {
-                    $resultat = '<strong>## Error evaling your code !! (empty result)</strong>';
-                }
-            } elseif ($save) {
-                $name = $form->get('name')->getData();
-                if (!empty($name) && !empty($code)) {
-                    $snippet->add($name,$code);
-                    $resultat="snippet '$name' saved";
-                    $app['session']->setFlash('success', $resultat);
-
-                    return $app->redirect($app['url_generator']->generate('homepage',array('name'=>$name)));
-                } else {
-                    $app['session']->setFlash('error', "Can't save without 'name' and 'code' !!");
-                }
-            } elseif ($pastebin) {
-                $name = $form->get('name')->getData();
-                if (!empty($code)) {
-                    $pb = $app['pastebin'];
-                    //$resultat = $pb->postCode($key,'php',$code,$name);
-                    $resultat = $pb->postCode('php',$code,$name);
-                    if (preg_match('/^Bad API request/',$resultat)) {
-                        $app['session']->setFlash('error', $resultat);
-                    } else {
-                        $app['session']->setFlash('success', "<a href=\"$resultat\">$resultat</a>");
-                    }
-
-                    return $app->redirect($app['url_generator']->generate('homepage'));
-                } else {
-                    $app['session']->setFlash('error', "Can't paste to pastebin without 'code' !!");
-                }
-            }
-        }
-    }
-    if (empty($resultat)) {
-        $resultat = '<h2>Welcome to yaskef !</h2>';
-        $pre = false;
-    }
-    if ($pre) {
-        $resultat = "<pre>\n$resultat\n</pre>";
-    }
-
-    $bloc_resultat = "\n<div class=\"result\">$resultat</div>\n";
-
-    return $app['twig']->render('index.html.twig',array(
-        'page_title' => 'Versatile interpretor, PHP mode',
-        'form' => $form->createView(),
-        'snippets' => $snippets,
-        'bloc_resultat' => $bloc_resultat,
-        'index' => $index,
-        'url' => $app['url_generator']->generate('homepage'),
-        )
-    );
+    return $app->redirect($app['url_generator']->generate('php'));
 })->bind('homepage');
-
-/*--------------------------------------------------------------------*
- * javascript
- *--------------------------------------------------------------------*/
-$app->match('/javascript', function() use ($app) {
-    $snippet = new SnippetJs($app['db']);
-    list($options,$snippets) = $snippet->getOptionsList();
-
-    $resultat='';
-    $index=0;
-    if ( ($name = $app['request']->get('name')) ) {
-        $index = array_search($name,array_keys($snippets));
-        $index = $index === false ? 0 : $index+1;
-    }
-    $form = $app['form.factory']->createBuilder('form')
-        ->add('code', 'textarea', array(
-                'label'      => 'Code',
-                'attr' => array('rows'=>10,'style'=>'width:100%')
-        ))
-        ->add('name','text')
-        ->add('snippet', 'choice',  array(
-            'choices'  => $options,
-            'multiple' => false,
-            'expanded' => false
-        ))
-        ->getForm()
-    ;
-
-    if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
-
-        if ($form->isValid()) {
-            $interp = new Interpreter($app);
-            $code = $form->get('code')->getData();
-            $name = $form->get('name')->getData();
-            $save = array_key_exists('save',$_POST);
-            $del  = array_key_exists('del',$_POST);
-            $test = array_key_exists('test',$_POST);
-            $pastebin = array_key_exists('pastebin',$_POST);
-            if ($test) {
-                $resultat = $interp->evalJs($code);
-            } elseif ($save) {
-                $name = $form->get('name')->getData();
-                if (!empty($name) && !empty($code)) {
-                    $snippet->add($name,$code);
-                    $resultat="snippet '$name' saved";
-                    $app['session']->setFlash('success', $resultat);
-
-                    return $app->redirect($app['url_generator']->generate('jscript',
-                        array('name'=>$name))
-                    );
-                } else {
-                    $app['session']->setFlash('error', "Can't save without 'name' and 'code' !!");
-                }
-            } elseif ($pastebin) {
-                if (!empty($code)) {
-                    $pb = $app['pastebin'];
-                    $resultat = $pb->postCode('javascript',$code,$name);
-                    if (preg_match('/^Bad API request/',$resultat)) {
-                        $app['session']->setFlash('error', $resultat);
-                    } else {
-                        $app['session']->setFlash('success', "<a href=\"$resultat\">$resultat</a>");
-                    }
-
-                    return $app->redirect($app['url_generator']->generate('jscript'));
-                } else {
-                    $app['session']->setFlash('error', "Can't paste to pastebin without 'code' !!");
-                }
-            } elseif ($del) {
-                return $app->redirect($app['url_generator']->generate('del_snippet',
-                    array('name' => $name,'interp' => 'js')));
-            }
-         }
-    }
-    if (empty($resultat)) {
-        $resultat = '
-            <script type="text/javascript">
-                document.write("<h2>Welcome to yaskef !</h2>");
-            </script>';
-    }
-    $bloc_resultat = "\n<div class=\"result\">$resultat</div>\n";
-
-    return $app['twig']->render('index.html.twig',array(
-        'active' => 'jscript',
-        'page_title' => 'Versatile interpretor, Javascript mode',
-        'form' => $form->createView(),
-        'snippets' => $snippets,
-        'bloc_resultat' => $bloc_resultat,
-        'index' => $index,
-        'url' => $app['url_generator']->generate('jscript'),
-        )
-    );
-})->bind('jscript');
-
-/*--------------------------------------------------------------------*
- * SQL
- *--------------------------------------------------------------------*/
-$app->match('/sql', function() use ($app) {
-    $snippet = new SnippetSql($app['db']);
-    list($options,$snippets) = $snippet->getOptionsList();
-
-    $resultat='';
-    $index=0;
-    if ( ($name = $app['request']->get('name')) ) {
-        $index = array_search($name,array_keys($snippets));
-        $index = $index === false ? 0 : $index+1;
-    }
-    $form = $app['form.factory']->createBuilder('form')
-        ->add('code', 'textarea', array(
-                'label'      => 'Code',
-                'attr' => array('rows'=>10,'style'=>'width:100%')
-        ))
-        ->add('name','text')
-        ->add('snippet', 'choice',  array(
-            'choices'  => $options,
-            'multiple' => false,
-            'expanded' => false
-        ))
-        ->getForm()
-    ;
-
-    if ('POST' === $app['request']->getMethod()) {
-        $form->bindRequest($app['request']);
-
-        if ($form->isValid()) {
-            $interp = new Interpreter($app);
-            $code = $form->get('code')->getData();
-            $save = array_key_exists('save',$_POST);
-            $test = array_key_exists('test',$_POST);
-            $pastebin = array_key_exists('pastebin',$_POST);
-            if ($test) {
-                $resultat = $interp->evalSql($code);
-            } elseif ($save) {
-                $name = $form->get('name')->getData();
-                if (!empty($name) && !empty($code)) {
-                    $snippet->add($name,$code);
-                    $resultat="snippet '$name' saved";
-                    $app['session']->setFlash('success', $resultat);
-
-                    return $app->redirect($app['url_generator']->generate('sql',array('name'=>$name)));
-                } else {
-                    $app['session']->setFlash('error', "Can't save without 'name' and 'code' !!");
-                }
-            } elseif ($pastebin) {
-                $name = $form->get('name')->getData();
-                if (!empty($code)) {
-                    $pb = $app['pastebin'];
-                    $resultat = $pb->postCode('sql',$code,$name);
-                    if (preg_match('/^Bad API request/',$resultat)) {
-                        $app['session']->setFlash('error', $resultat);
-                    } else {
-                        $app['session']->setFlash('success', "<a href=\"$resultat\">$resultat</a>");
-                    }
-
-                    return $app->redirect($app['url_generator']->generate('sql'));
-                } else {
-                    $app['session']->setFlash('error', "Can't paste to pastebin without 'code' !!");
-                }
-            }
-         }
-    }
-    if (empty($resultat)) {
-        $resultat = 'No default result for SQL...';
-    }
-    $bloc_resultat = "\n<div class=\"result\">$resultat</div>\n";
-
-    return $app['twig']->render('index.html.twig',array(
-        'active' => 'sql',
-        'page_title' => 'Versatile interpretor, SQL mode',
-        'form' => $form->createView(),
-        'snippets' => $snippets,
-        'bloc_resultat' => $bloc_resultat,
-        'index' => $index,
-        'url' => $app['url_generator']->generate('sql'),
-        )
-    );
-})->bind('sql');
 
 /*--------------------------------------------------------------------*
  * encode
@@ -459,26 +192,23 @@ $app->match('/profile', function() use ($app) {
 /*--------------------------------------------------------------------*
  * delete_snippet
  *--------------------------------------------------------------------*/
-$app->match('/delete_snippet/{interp}/{name}', function($interp,$name) use ($app) {
-    if ($interp == 'php') {
+$app->match('/delete_snippet/{lang}/{name}', function($lang,$name) use ($app) {
+    if ($lang == 'php') {
         $snippet = new Snippet($app['db']);
-        $redirect = $app['url_generator']->generate('homepage');
-    } elseif ($interp == 'js') {
+    } elseif ($lang == 'js') {
         $snippet = new SnippetJs($app['db']);
-        $redirect = $app['url_generator']->generate('jscript');
-    } elseif ($interp == 'sql') {
+    } elseif ($lang == 'sql') {
         $snippet = new SnippetSql($app['db']);
-        $redirect = $app['url_generator']->generate('sql');
     } else {
-        throw new \Exception("Unknow interpreter: $interp");
+        throw new \Exception("delete() Unknow language: $lang");
     }
     $data = array(
-        'interp' => $interp,
+        'lang' => $lang,
         'name' => $name,
     );
     $form = $app['form.factory']->createBuilder('form',$data)
         ->add('name', 'hidden')
-        ->add('interp','hidden')
+        ->add('lang','hidden')
         ->getForm()
     ;
     if ('POST' === $app['request']->getMethod()) {
@@ -487,10 +217,10 @@ $app->match('/delete_snippet/{interp}/{name}', function($interp,$name) use ($app
         if ($form->isValid()) {
             // set and redirect
             $name = $form->get('name')->getData();
-            $interp = $form->get('interp')->getData();
-            $snippet->deleteSnippet($name,$interp);
-            $app['session']->setFlash('success', "Snippet $interp named $name deleted");
-            return $app->redirect($redirect);
+            $lang = $form->get('lang')->getData();
+            $snippet->deleteSnippet($name,$lang);
+            $app['session']->setFlash('success', "$lang Snippet named $name deleted");
+            return $app->redirect($app['url_generator']->generate($lang));
         } else {
             $app['session']->setFlash('error', "Error deleting snippet !!");
         }
@@ -498,10 +228,10 @@ $app->match('/delete_snippet/{interp}/{name}', function($interp,$name) use ($app
 
 
     return $app['twig']->render('del_snippet.html.twig', array(
-        'active' => $interp,
+        'active' => $lang,
         'page_title' => 'Confirm deleting a snippet',
         'name' => $name,
-        'interp' => $interp,
+        'lang' => $lang,
         'form' => $form->createView()
         )
     );

@@ -14,7 +14,7 @@ class PasteBin
     const URL='http://pastebin.com/api/api_post.php';
     const LOGIN_URL='http://pastebin.com/api/api_login.php';
 
-    const HEAD="Yaskef Snippet (http://electrolinux.github.com/yaskef/)\r\n";
+    const HEAD="Yaskef Snippet (electrolinux.github.com/yaskef/)\r\n";
 
     protected $db;
     protected $app;
@@ -115,31 +115,31 @@ class PasteBin
         return $response;
     }
 
-    protected function prepareCode($interp,$code)
+    protected function prepareCode($lang,$code)
     {
-        if($interp == 'php') {
-            $s = "<?php\r\n// " . PasteBin::HEAD . $code;
-        } elseif ($interp == 'javascript') {
-            $s = "// " . PasteBin::HEAD . $code;
-        } elseif ($interp == 'sql') {
-            $s = '-- ' . PasteBin::HEAD . $code;
+        if($lang == 'php') {
+            $s = "<?php\r\n// " . PasteBin::HEAD . "\r\n$code";
+        } elseif ($lang == 'js') {
+            $s = "/*\r\n *" . PasteBin::HEAD ." */\r\n\r\n$code";
+        } elseif ($lang == 'sql') {
+            $s = '-- ' . PasteBin::HEAD . "\r\n$code";
         } else {
             $s='';
         }
         return urlencode($s);
     }
 
-    public function postCode($interp,$code,$title='')
+    public function postCode($lang,$code,$title='')
     {
         $api_dev_key = $this->pb_api_key;
-        $api_paste_code = $this->prepareCode($interp,$code);
-        $api_paste_private = '0'; // 0=public 1=unlisted 2=private
+        $api_paste_code = $this->prepareCode($lang,$code);
+        $api_paste_private = $this->pb_exposure;
         if (empty($title)) {
             $title='New Pastebin test';
         }
         $api_paste_name = $title;
-        $api_paste_expire_date = '10M';
-        $api_paste_format = $interp;
+        $api_paste_expire_date = $this->pb_expiration;
+        $api_paste_format = $lang == 'js' ? 'javascript' : $lang;
         $api_user_key = $this->pb_api_user_key; // if an invalid api_user_key or no key is used, the paste will be create as a guest
         $api_paste_name = urlencode($api_paste_name);
         $url = PasteBin::URL;
