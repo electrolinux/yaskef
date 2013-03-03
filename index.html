@@ -42,7 +42,8 @@
       <section>
         <div id="title">
           <h1>yaskef</h1>
-          <p>Yet Another Silex-Kitchen-Edition Fork ! Simple Silex application for testing/storing PHP, SQL, Javascript snippet</p>
+          <p>Yet Another Silex-Kitchen-Edition Fork !<br/>
+           Simple Silex application for testing/storing/pasting PHP, SQL, Javascript snippet</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/electrolinux">electrolinux</a></span>
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
@@ -50,25 +51,35 @@
 
         <h1>yaskef - PHP, SQL, Javascript live interpreter</h1>
 
-<p>Based on a fork of the <a href="http://lyrixx.github.com/Silex-Kitchen-Edition">Silex-Kitchen-Edition</a>, yaskef is a developper
-utility to quickly test PHP, SQL and Javascript snippets, saving them
-in db for later use, etc.</p>
+<p>Based on a fork of the <a href="http://lyrixx.github.com/Silex-Kitchen-Edition">Silex-Kitchen-Edition</a>,
+yaskef is a developper utility to quickly test PHP, SQL and Javascript snippets, saving them
+in db for later use, pasting them on <a href="http://pastebin.com">pastebin.com</a> etc.</p>
 
-<p>(Initialy named PhpLive, but the name is already taken)</p>
+<p>(Initialy named PhpLive, but the name was already taken,so...)</p>
 
 <h2>Screenshots</h2>
 
     <div class="example">
-				<a rel="lightbox[shot]" href="images/phplive-01.png"  title="PhpLive! is cool ;-)">
-					<img src="images/phplive-01-thumb.png" alt="PhpLive! is cool screenshot">
+				<a rel="lightbox[shot]" href="images/yaskef01-login.png"  title="Yaskef login">
+					<img src="images/yaskef01-login_th.png" alt="Yaskef Login">
 				</a>
-				<a rel="lightbox[shot]" href="images/phplive-02.png" title="Minimalist Javascript...">
-					<img src="images/phplive-02-thumb.png" alt="Minimalist Javascript">
+				<a rel="lightbox[shot]" href="images/yaskef02-php.png" title="Yaskef ready for your code">
+					<img src="images/yaskef02-php_th.png" alt="Yaskef ready for your code">
 				</a>
-				<a rel="lightbox[shot]" href="images/phplive-03.png" title="Testing SQL...">
-					<img src="images/phplive-03-thumb.png" alt="Testing SQL">
+				<a rel="lightbox[shot]" href="images/yaskef03-cool.png" title="Yaskef is cool :)">
+					<img src="images/yaskef03-cool_th.png" alt="Yaskef is cool :)">
+				</a>
+				<a rel="lightbox[shot]" href="images/yaskef04-saved.png" title="Snippet saved">
+					<img src="images/yaskef04-saved_th.png" alt="Snippet saved">
+				</a>
+				<a rel="lightbox[shot]" href="images/yaskef05jsplay.png" title="Playing with Javascript">
+					<img src="images/yaskef05jsplay_th.png" alt="Playing with Javascript">
+				</a>
+				<a rel="lightbox[shot]" href="images/yaskef07profile.png" title="Yaskef User's Profile (mainly pastebin options)">
+					<img src="images/yaskef07profile_th.png" alt="Yaskef User Profile">
 				</a>
 	</div>
+
 
 <h2>Installation</h2>
 
@@ -95,6 +106,14 @@ php composer.phar install
 php console doctrine:schema:load
 php console user:create
 php console snippet:load --force
+</pre></div>
+
+<p>If running on linux with sqlite3 db, ensure that <strong>the web user has write access both to
+the database file and his folder.</strong> For example :</p>
+
+<div class="highlight"><pre>
+chgrp www-data resources/db resources/db/prod.db
+chmod g+w resources/db resources/db/prod.db
 </pre></div>
 
 <p>Configure your web server, pointing the DocumentRoot to PATH/TO/YOUR/APP/web</p>
