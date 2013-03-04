@@ -20,6 +20,114 @@ $app->match('/', function() use ($app) {
 })->bind('homepage');
 
 /*--------------------------------------------------------------------*
+ * prep-translations
+ *--------------------------------------------------------------------*/
+$app->get('/prep-translations', function() use ($app) {
+
+    $twig_finder = new Finder();
+    $twig_finder->files()
+        ->ignoreVCS(true)
+        ->name('*.html.twig')
+        ->name('*.php')
+        ->notName('*~')
+        ->in(__DIR__.'/../resources')
+        ->in(__DIR__)
+    ;
+    $nstr=0;
+    $strings=array();
+    foreach ($twig_finder as $file) {
+        //$content .= '# ' . basename($file) . "\n";
+        $s = file_get_contents($file);
+        // 'single quote'|trans
+        if (preg_match_all("/{{ '([^|}]*)'\|\s*trans }}/s",$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                if (!in_array($t,$strings)) {
+                    $strings[]=$t;
+                }
+            }
+        }
+        // "double quotes"|trans
+        if (preg_match_all('/{{ "([^|}]*)"\|\s*trans }}/s',$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                if (!in_array($t,$strings)) {
+                    $strings[]=$t;
+                }
+            }
+        }
+        // app.translator.trans('single quote'...
+        if (preg_match_all("/\bapp.translator.trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                if (!in_array($t,$strings)) {
+                    $strings[]=$t;
+                }
+            }
+        }
+        // app.translator.trans("double quote"...
+        if (preg_match_all('/\bapp.translator.trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                if (!in_array($t,$strings)) {
+                    $strings[]=$t;
+                }
+            }
+        }
+    }
+    $php_finder = new Finder();
+    $php_finder->files()
+        ->ignoreVCS(true)
+        ->name('*.php')
+        ->notName('*~')
+        ->in(__DIR__)
+    ;
+    $php_strings=array();
+    foreach ($php_finder as $file) {
+        $s = file_get_contents($file);
+        // $app ['translator'] -> trans('single quote form 1...
+        // $app ["translator"] -> trans('single quote form 2...
+        if (preg_match_all("/app\[(?:'|\")translator(?:'|\")\]->trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                //$t .= ' (1)';
+                if (!in_array($t,$php_strings)) {
+                    $php_strings[]=$t;
+                }
+            }
+        }
+        // $app ['translator'] -> trans("double quote...
+        // $app ["translator"] -> trans("double quote form 2...
+        //if (preg_match_all('/app\[\'translator\'\]->trans\("([^"]*)".*\)/s',$s,$matches)) {
+        if (preg_match_all('/app\[(?:\'|")translator(?:\'|")\]->trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
+            //print_r($matches[1]);
+            foreach($matches[1] as $t) {
+                $nstr++;
+                //$t .= ' (2)';
+                if (!in_array($t,$php_strings)) {
+                    $php_strings[]=$t;
+                }
+            }
+        }
+    }
+    sort($strings);
+    sort($php_strings);
+    return $app['twig']->render('prep-translations.html.twig', array(
+        'nstr' => $nstr,
+        'strings' => $strings,
+        'php_strings' => $php_strings,
+    ));
+})
+->bind('prep-translations')
+;
+
+//=====================
+/*--------------------------------------------------------------------*
  * encode
  *--------------------------------------------------------------------*/
 $app->match('/encode', function() use ($app) {

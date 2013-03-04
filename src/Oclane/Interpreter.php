@@ -23,7 +23,8 @@ class Interpreter
         $err_mode = error_reporting();
         error_reporting(E_ALL);
         if (strpos($code,'?>') !== false or strpos($code, '<?php ') !== false) {
-            $this->app['session']->setFlash('warning','opening or closing php tags, syntax check disabled for mixed content');
+            $msg = $app['translator']->trans('Opening or closing php tags found. Syntax check is disabled for mixed content');
+            $this->app['session']->setFlash('warning',$msg);
             $errors = false;
         } else {
             $errors = $this->phpSyntaxError($code);
@@ -34,7 +35,7 @@ class Interpreter
             //$res = eval($code);
             $result = ob_get_contents();
             if ($res === false) {
-                $error = 'Error executing your code';
+                $error = $app['translator']->trans('Error executing your code');
             }
             ob_end_clean();
         } else {

@@ -42,9 +42,10 @@ If running on linux with sqlite3 db, ensure that the web user has write access b
 the database file and his folder. For example :
 
 ```
-chgrp -R www-data resources/db
-chmod -R g+w resources/db
+chgrp www-data resources/db resources/db/prod.db
+chmod g+w resources/db resources/db/prod.db
 ```
+Don't forget to do it again each time you re-create your database
 
 Configure your web server, pointing the DocumentRoot to PATH/TO/YOUR/APP/web
 

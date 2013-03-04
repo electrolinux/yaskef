@@ -153,7 +153,8 @@ class CodeController implements ControllerProviderInterface
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
-                        $app['session']->setFlash('error', "Can't save without 'name' and 'code' !!");
+                        $msg = $app['translator']->trans("Can't save without 'name' and 'code' !!");
+                        $app['session']->setFlash('error', $msg);
                     }
                 } elseif ($pastebin) {
                     if (!empty($code)) {
@@ -167,11 +168,13 @@ class CodeController implements ControllerProviderInterface
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
-                        $app['session']->setFlash('error', "Can't paste to pastebin without 'code' !!");
+                        $msg = $app['translator']->trans("Can't paste to pastebin without 'code' !!");
+                        $app['session']->setFlash('error', $msg);
                     }
                 } elseif ($del) {
                     if (empty($name)) {
-                        $app['session']->setFlash('error', "Can't delete without 'name' !!");
+                        $msg = $app['translator']->trans("Can't delete without 'name' !!");
+                        $app['session']->setFlash('error', $msg);
                     } else {
                         return $app->redirect($app['url_generator']->generate('del_snippet',
                             array('name' => $name,'lang' => $lang)));
@@ -180,7 +183,7 @@ class CodeController implements ControllerProviderInterface
             }
         }
         if (empty($resultat)) {
-            $resultat = '<h2>Welcome to yaskef !</h2>';
+            $resultat = $app['translator']->trans('<h2>Welcome to yaskef !</h2>');
             $pre = false;
         }
         if ($pre) {
@@ -191,7 +194,7 @@ class CodeController implements ControllerProviderInterface
         $mode = strtoupper($lang);
         return $app['twig']->render('index.html.twig',array(
             'active' => $lang,
-            'page_title' => "Yaskef versatile interpretor, $mode mode",
+            'page_title' => $app['translator']->trans('Yaskef versatile interpretor, %mode% mode',array('%mode%',$mode)),
             'form' => $form->createView(),
             'snippets' => $snippets,
             'bloc_resultat' => $bloc_resultat,

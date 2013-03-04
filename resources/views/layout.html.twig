@@ -45,18 +45,19 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                            <li><a href="{{ path('clearcache') }}">Clear cache</a></li>
-                            <li><a href="{{ path('encode') }}">Password encoder</a></li>
-                            <li><a href="{{ path('phpinfo') }}">PHP infos</a></li>
+                            <li><a href="{{ path('clearcache') }}">{{ 'Clear cache'|trans }}</a></li>
+                            <li><a href="{{ path('prep-translations') }}">{{ 'Prepare translations'|trans }}</a></li>
+                            <li><a href="{{ path('encode') }}">{{ 'Password encoder'|trans }}</a></li>
+                            <li><a href="{{ path('phpinfo') }}">{{ 'PHP infos'|trans }}</a></li>
                             </ul>
                         </li>
-                        <li {% if 'doc' == active %}class="active"{% endif %}><a href="{{ path('doc') }}">Help</a></li>
+                        <li {% if 'doc' == active %}class="active"{% endif %}><a href="{{ path('doc') }}">{{ 'Help'|trans }}</a></li>
                         <li class="dropdown{% if 'account' == active %} active{% endif %}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                     {{ app.security.getToken().getUsername() }}
                                 {% else %}
-                                    Account
+                                    {{ 'Account'|trans }}
                                 {% endif %}
                                 <b class="caret"></b>
                             </a>

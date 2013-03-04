@@ -3,7 +3,7 @@
 
 {% block content %}
 
-    <h2>{{ user.getUsername() ~ "'s profile"|trans }}</h2>
+    <h2>{{ app.translator.trans("%username%'s profile",{'%username%':user.getUsername()}) }}</h2>
 
     <form action="{{ path('profile') }}" method="post" novalidate class="form-vertical">
         {{ error|default('') }}

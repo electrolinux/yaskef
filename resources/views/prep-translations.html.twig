@@ -1,0 +1,19 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'tools' %}
+{% set page_title = app.translator.trans('Translations') %}
+
+{% block content %}
+<h2>{{ 'Translatable strings'|trans }}</h2>
+<pre>
+{% for s in strings %}
+{{ s }}:
+{% endfor %}
+</pre>
+
+<h3>In PHP</h3>
+<pre>
+{% for s in php_strings %}
+{{ s }}:
+{% endfor %}
+</pre>
+{% endblock %}

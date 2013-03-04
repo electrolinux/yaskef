@@ -1,1 +1,35 @@
-Homepage: Accueil
+%username%'s profile: Profil de %username%
+Account: Compte
+Clear cache: Vider le cache
+Delete: Supprimer
+Encoding password: Encodage du mot de passe
+Form: Formulaire
+Help: Aide
+Javascript:
+Login: Connexion
+Logout: Déconnexion
+PHP:
+PHP infos: Infos PHP
+Password encoder: Encodeur de mot de passe
+Paste to pastebin.com: Copier sur pastebin.com
+Please confirm snippet deletion: SVP, confirmez la suppression du fragment
+Prepare translations: Préparer les traductions
+Profile: Profil
+SQL:
+Save: Enregistrer
+Send: Envoyer
+Test: Test
+Tools: Outils
+Translatable strings: Chaînes traduisibles
+Translations: Traductions
+Yaskef !:
+Yaskef User Guide: Guide de l'utilisateur Yaskef
+Yes, delete this snippet: Oui, supprimer ce fragment
+connect: connexion
+<h2>Welcome to yaskef !</h2>: <h2>Bienvenue à Yaskef !</h2>
+Can't delete without 'name' !!: Suppression impossible sans un «nom»
+Can't paste to pastebin without 'code' !!: Copie vers pastebin impossible sans «code»
+Can't save without 'name' and 'code' !!: Sauvegarde impossible sans «nom» ni «code»
+Error executing your code: Erreur en exécutant votre code
+Opening or closing php tags found. Syntax check is disabled for mixed content: Tags ouvrant ou fermant trouvés. la vérification de syntaxe est désactivée pour un contenu mixte.
+Yaskef versatile interpretor, %mode% mode: Interpreteur versatile Yaskef, en mode %mode%
