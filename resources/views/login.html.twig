@@ -3,14 +3,18 @@
 
 {% block content %}
 
-    <h1>{{ 'Login'|trans }}</h1>
+    <h1>{{ 'Please login'|trans }}</h1>
 
     <form action="{{ path('login_check') }}" method="post" novalidate class="form-vertical">
         {{ error }}
-        <label for="_username">Username:</label>
+        <label for="_username">{{ 'Username'|trans }}:</label>
         <input type="text" id="_username" name="_username" value="{{ last_username }}" />
-        <label for="_password">Password:</label>
+        <label for="_password">{{ 'Password'|trans }}:</label>
         <input type="password" id="_password" name="_password" value="" />
+
+        {#<input type="checkbox" id="remember_me" name="_remember_me" checked />
+        <label for="remember_me">{{ 'Keep me logged in'|trans }}</label>#}
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{{ 'Send'|trans }}</button>
         </div>

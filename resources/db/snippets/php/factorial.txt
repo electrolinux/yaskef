@@ -1,3 +1,5 @@
+<?php
+
 function f($n) {
     static $level=0;
     $s = str_pad('',$level,'.');

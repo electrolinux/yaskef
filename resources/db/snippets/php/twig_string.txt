@@ -1,3 +1,5 @@
+<?php
+
 $env = new \Twig_Environment(new \Twig_Loader_String());
 echo $env->render(
   "Hello {{ name }}!",

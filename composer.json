@@ -31,7 +31,7 @@
         "symfony/finder"        : "2.1.*",
         "kriswallsmith/assetic" : "1.0.*",
         "doctrine/dbal"         : "2.3.*",
-        "twitter/bootstrap"     : "v2.2.2",
+        "twitter/bootstrap"     : "v2.3.0",
         "mheap/silex-assetic"   : "dev-master"
     },
     "require-dev": {

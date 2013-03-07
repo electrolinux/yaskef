@@ -1,0 +1,35 @@
+<?php
+
+use Symfony\Component\Finder\Finder;
+$finder = new Finder();
+$finder->files()
+    ->ignoreVCS(true)
+    ->name('*.php')
+    ->notName('*~')
+    ->in(__DIR__.'/../../src')
+    ->in(__DIR__.'/../../resources')
+    ->exclude('cache')
+;
+$nstr=0;
+$ok=0;
+$nfiles=0;
+foreach ($finder as $file) {
+  $nfiles++;
+  echo '#--- ' . basename($file) . "\n";
+  $s = file_get_contents($file);
+  if (preg_match_all('/"((?U)[^"]*)"/s',$s,$matches)) {
+    //print_r($matches[1]);
+    foreach($matches[1] as $t) {
+      if (strpos($t,'$') !== false || strpos($t,"\n") !== false || strpos($t,"'") !== false) {
+        $ok++;
+        printf("%-65s%s (ok)\n", htmlentities(substr($t,0,65)),strlen($t) > 65 ? '...':'   ');
+      } else {
+        //echo htmlentities("$t\n");
+        $nstr++;
+      }
+    }
+  }
+}
+$total=$nstr + $ok;
+echo "\n\n** $total double-quoted strings found in $nfiles\n";
+echo "\n$ok strings ok (var inside)\n$nstr string to single-quote (no var inside)";

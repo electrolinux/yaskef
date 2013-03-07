@@ -1,12 +1,14 @@
 {% extends 'layout.html.twig' %}
-{% set active = 'profile' %}
+
+
+{#% set active = lang %#}
 
 {% block content %}
 
     <h2>{{ 'Please confirm snippet deletion'|trans }}</h2>
 
-    <h4>{{ lang|upper }} Snippet name : {{ name }}</h4>
-    <form action="{{ path('del_snippet',{'lang':lang,'name':name}) }}" method="post" novalidate class="form-vertical">
+    <h4>{{ app.translator.trans("%lang% Snippet named '%name%'",{'%lang%':lang|upper,'%name%':name}) }}</h4>
+    <form action="" method="post" novalidate class="form-vertical">
         {{ form_widget(form) }}
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{{ 'Yes, delete this snippet'|trans }}</button>

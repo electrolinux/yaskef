@@ -10,22 +10,26 @@
     <p>In PHP mode, just type some PHP code in the code field, then click
     "Test" to see the result.
     </p>
-    <pre>echo 'Hello, World!';</pre>
+    <pre>&lt:?php
+echo 'Hello, World!';</pre>
 
-    <p>You don't have to begin your code with the open_tag <code>&lt;?php</code>,
-    as the content of the field is meant to be already in PHP mode.<br/>
-    But if you need to put some html, don't forget to leave the PHP mode
+    <p>Yaskef as already put the open_tag <code>&lt;?php</code> for you,
+    event if it will be removed before sending your code to eval; it is only
+    mandatory for the <a href="http://codemirror.net/" class="ext">Code Mirror</a> editor
+    to show a correct syntax highlight.<br/>
+    If you need to put some html, you can leave the PHP mode
     with <code>?&gt;</code>.</p>
     <p class="note"> A final <code>&lt;?php&nbsp;</code> for returning in PHP mode
     is not mandatory.
     </p>
-    <pre>echo 'Hello, World';
+    <pre>&lt;?php
+echo 'Hello, World';
 ?&gt;
 &lt;hr /&gt;
 &lt;a href="http://electrolinux.github.com/yaskef/"&gt;Yaskef is cool&lt;/a&gt;</pre>
 
-    <p class="note">Mixed content is not passed to the minimalistic/simplistic
-    syntax checker.
+    <p class="note">Mixed content, <code>use </code> or <code>namespace </code>
+    is not passed to the minimalistic/simplistic syntax checker.
     </p>
 
     <h3>Javascript snippets</h3>
@@ -103,6 +107,8 @@
             good work for the opensource sofware -- thanks to
             <a href="https://twitter.com/michigangraham">Matt Graham</a> for the nice web site template
             </li>
+
+            <li><a href="http://twitter.github.com/bootstrap/index.html">bootstrap</a></li>
 
             <li><a href="https://packagist.org/">Packagist.com</a></li>
 

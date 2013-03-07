@@ -1,0 +1,53 @@
+{% extends 'layout.html.twig' %}
+{% set active = 'tools' %}
+{% set page_title = app.translator.trans('Translations') %}
+
+{% block content %}
+<h2>{{ 'Translations'|trans }}</h2>
+    <form action="" method="post" novalidate {{ form_enctype(form) }} class="form-vertical">
+        {{ form_widget(form) }}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ 'Send'|trans }}</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+{% block style %}
+{{ parent() }}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/codemirror.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/neat.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/cobalt.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/elegant.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/eclipse.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/monokai.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/solarized.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/ambiance.css">
+{% endblock %}
+
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/codemirror.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/yaml/yaml.js"></script>
+
+
+<script type="text/javascript">
+{% verbatim %}
+    $(document).ready(function () {
+
+        // codemirror editor
+        var cmEditor = CodeMirror.fromTextArea(document.getElementById("form_translations"), {
+            lineNumbers: true,
+            theme: 'cobalt',
+            matchBrackets: true,
+            mode: 'yaml',
+            indentUnit: 4,
+            indentWithTabs: false,
+            enterMode: "keep",
+            tabMode: "shift"
+        });
+    });
+{% endverbatim %}
+</script>
+{% endblock %}

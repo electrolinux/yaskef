@@ -72,15 +72,23 @@ class CodeController implements ControllerProviderInterface
 
     protected function createForm($choices,$lang='php')
     {
-        $form = $this->app['form.factory']->createBuilder('form')
+        if ($lang=='php') {
+            $data=array('code' => "<?php\n");
+        } else {
+            $data = null;
+        }
+        $form = $this->app['form.factory']->createBuilder('form',$data)
             ->add('code', 'textarea', array(
-                    'label'      => 'Code',
-                    'attr' => array('rows'=>10,'style'=>'width:98%')
+                    'label'      => $this->app['translator']->trans('Code'),
+                    'attr' => array(
+                        'rows'=>10,
+                        'style'=>'width:98%',
+                        'class'=>'CodeMirror-scroll' )
             ));
 
         if ($lang=='php') {
             $form->add('pre','checkbox',array(
-                'label' => 'Pre-formatted result'
+                'label' => $this->app['translator']->trans('Pre-formatted result')
             ));
         }
         if ($lang=='js') {
@@ -89,13 +97,18 @@ class CodeController implements ControllerProviderInterface
                 'attr'  => array('rows'=>6,'style'=>'width:98%')
             ));
         }
-        $form->add('name','text')
+        $form->add('name','text', array(
+                'label' => $this->app['translator']->trans('Save as'),
+            ))
             ->add('snippet', 'choice',  array(
                 'choices'  => $choices,
                 'multiple' => false,
-                'expanded' => false
+                'expanded' => false,
+                'label' => $this->app['translator']->trans('Name'),
             ))
-            ->add('comment','textarea')
+            ->add('comment','textarea', array(
+                'label' => $this->app['translator']->trans('Comments'),
+            ))
             ;
         return $form->getForm();
     }
@@ -113,7 +126,7 @@ class CodeController implements ControllerProviderInterface
     protected function handleRequest($app,$lang='php')
     {
         $snippet = $this->getSnippet($lang);
-        list($options,$snippets) = $snippet->getOptionsList();
+        list($options,$snippets) = $snippet->getOptionsList($app);
 
         $resultat='';
         $index=0;
@@ -148,7 +161,7 @@ class CodeController implements ControllerProviderInterface
                 } elseif ($save) {
                     if (!empty($name) && !empty($code)) {
                         $snippet->add($name,$code,$comment,$html);
-                        $resultat="snippet '$name' saved";
+                        $resultat=$app['translator']->trans("snippet '%name%' saved.",array('%name%'=>$name));
                         $app['session']->setFlash('success', $resultat);
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
@@ -176,8 +189,13 @@ class CodeController implements ControllerProviderInterface
                         $msg = $app['translator']->trans("Can't delete without 'name' !!");
                         $app['session']->setFlash('error', $msg);
                     } else {
-                        return $app->redirect($app['url_generator']->generate('del_snippet',
-                            array('name' => $name,'lang' => $lang)));
+                        $url = $app['url_generator']->generate('del_snippet',
+                            array(
+                                //'_locale' => $app['request']->getLocale(),
+                                'lang' => $lang,
+                                'name' => $name,
+                            ));
+                        return $app->redirect($url);
                     }
                 }
             }
@@ -194,7 +212,7 @@ class CodeController implements ControllerProviderInterface
         $mode = strtoupper($lang);
         return $app['twig']->render('index.html.twig',array(
             'active' => $lang,
-            'page_title' => $app['translator']->trans('Yaskef versatile interpretor, %mode% mode',array('%mode%',$mode)),
+            'page_title' => $app['translator']->trans('Yaskef versatile interpretor, %mode% mode',array('%mode%'=>$mode)),
             'form' => $form->createView(),
             'snippets' => $snippets,
             'bloc_resultat' => $bloc_resultat,
@@ -207,12 +225,16 @@ class CodeController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $this->app = $app;
-        $ctrl =  $app['controllers_factory'];
+        $ctrl =  $app['controllers_factory']
+            ->value('_locale','en')
+            ->assert('_locale',implode('|',$app['locales']))
+            ;
+
 
         /*------------------------------------------------------------*
          * index (php)
          *------------------------------------------------------------*/
-        $ctrl->match('/', function (Application $app) { //use($cfg) {
+        $ctrl->match('/{_locale}', function (Application $app) { //use($cfg) {
             return $this->handleRequest($app,'php');
         })
         ->bind('php')
@@ -221,7 +243,7 @@ class CodeController implements ControllerProviderInterface
         /*------------------------------------------------------------*
          * js
          *------------------------------------------------------------*/
-        $ctrl->match('/js', function (Application $app) { //use($cfg) {
+        $ctrl->match('/{_locale}/js', function (Application $app) { //use($cfg) {
             return $this->handleRequest($app,'js');
         })
         ->bind('js')
@@ -230,7 +252,7 @@ class CodeController implements ControllerProviderInterface
         /*------------------------------------------------------------*
          * sql
          *------------------------------------------------------------*/
-        $ctrl->match('/sql', function (Application $app) { //use($cfg) {
+        $ctrl->match('/{_locale}/sql', function (Application $app) { //use($cfg) {
             return $this->handleRequest($app,'sql');
         })
         ->bind('sql')

@@ -22,8 +22,10 @@ class Interpreter
         $result='';
         $err_mode = error_reporting();
         error_reporting(E_ALL);
-        if (strpos($code,'?>') !== false or strpos($code, '<?php ') !== false) {
-            $msg = $app['translator']->trans('Opening or closing php tags found. Syntax check is disabled for mixed content');
+        $code = preg_replace('/^(<\?php((?U)\s|\n)*)/','',$code);
+        $code = preg_replace('/\?>$/','',$code);
+        if ($this->canBeChecked($code,'?>') === false) {
+            $msg = $this->app['translator']->trans('Closing php tag, use or namespace found. Syntax check disabled.');
             $this->app['session']->setFlash('warning',$msg);
             $errors = false;
         } else {
@@ -35,7 +37,7 @@ class Interpreter
             //$res = eval($code);
             $result = ob_get_contents();
             if ($res === false) {
-                $error = $app['translator']->trans('Error executing your code');
+                $error = $this->app['translator']->trans('Error executing your code');
             }
             ob_end_clean();
         } else {
@@ -45,6 +47,29 @@ class Interpreter
         }
         error_reporting($err_mode);
         return ($result);
+    }
+
+    protected function canBeChecked($code)
+    {
+        // remove multilines comments
+        $code=preg_replace("#(/\*(?U)[^*]*\*/)#",'',$code);
+        // remove until-end-of-line comments
+        $code=preg_replace("#(//(?U)[^\n]*\n)#",'',$code);
+        // we expect the rest is only pure php
+        if (strpos('?>',$code) !== false) {
+            return false;
+        }
+        if (preg_match('/^(use |namespace )/m',$code)) {
+            return false;
+        }
+        /*
+        $lines = explode('\r\n',$code);
+        foreach($lines as $line) {
+            if (preg_match('/^(use |namespace )/',$line)) {
+                return false;
+            }
+        }*/
+        return true;
     }
 
     /**
@@ -118,6 +143,8 @@ class Interpreter
 
     private function codeWithReturn($code)
     {
+        $code = preg_replace('/^<\?php((?U).*)\n/','',$code);
+        //die("<pre>" . htmlentities($code) . "</pre>");
         $nbclose = count(explode('?>',$code));
         $nbopen = count(explode('<?php',$code));
         $append = $nbclose > $nbopen ? '<?php return true;' : ' ;return true;';

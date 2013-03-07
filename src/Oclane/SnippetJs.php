@@ -10,18 +10,18 @@ class SnippetJs extends Snippet
     protected $lang = 'js';
     protected $name = 'Javascript';
 
-    public function getOptionsList()
+    public function getOptionsList($app)
     {
         $snippets=array();
-        $options=array(''=>$this->name . ' Snippet...');
+        $options=array(''=>$app['translator']->trans('%lang% Snippet...',array(
+            '%lang%' => $this->name
+        )));
         foreach ($this->getAll() as $row) {
             $_val = $row['name'];
+            $nrows = $row['rows'];
             $safe_rows = $this->getSafeRows($row['code']);
-            $_name = "$_val: " . $safe_rows[0];
-            if (strlen($_name) > 50) {
-                $parts = explode("\n",wordwrap($_name, 50, "\n", 1));
-                $_name = $parts[0];
-            }
+            $_name = $app['translator']->trans('%name% (%nrows% rows)', array(
+                '%name%' => $_val, '%nrows%' => $nrows));
             $options[$_val] = $_name;
             $snippets[$_val] = array();
             $code = implode('\n',$safe_rows);

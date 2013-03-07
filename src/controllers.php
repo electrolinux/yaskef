@@ -7,25 +7,40 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Finder\Finder;
 
-//use Oclane\Interpreter;
-//use Oclane\Snippet;
+$app['locales']=array('en','fr','es','de');
 
 $app->mount('/code', new CodeController());
+
+$app['controllers']
+    ->value('_locale','en')
+    ->assert('_locale',implode('|',$app['locales']))
+    ;
 
 /*--------------------------------------------------------------------*
  * home (redirect to /code)
  *--------------------------------------------------------------------*/
-$app->match('/', function() use ($app) {
-    return $app->redirect($app['url_generator']->generate('php'));
-})->bind('homepage');
+$app->match('/{_locale}', function() use ($app) {
+    return $app->redirect($app['url_generator']->generate('php',array(
+        '_locale'=> $app['request']->getLocale()
+    )));
+})
+->bind('homepage');
 
 /*--------------------------------------------------------------------*
- * prep-translations
+ * translations
  *--------------------------------------------------------------------*/
-$app->get('/prep-translations', function() use ($app) {
+$app->match('/{_locale}/translations', function() use ($app) {
 
-    $twig_finder = new Finder();
-    $twig_finder->files()
+    $isPhp = function($fname) {
+        return pathinfo(strtolower($fname), PATHINFO_EXTENSION) == 'php';
+    };
+
+    $isTwig = function($fname) {
+        return pathinfo(strtolower($fname), PATHINFO_EXTENSION) == 'twig';
+    };
+
+    $finder = new Finder();
+    $finder->files()
         ->ignoreVCS(true)
         ->name('*.html.twig')
         ->name('*.php')
@@ -35,105 +50,159 @@ $app->get('/prep-translations', function() use ($app) {
     ;
     $nstr=0;
     $strings=array();
-    foreach ($twig_finder as $file) {
-        //$content .= '# ' . basename($file) . "\n";
+    foreach ($finder as $file) {
         $s = file_get_contents($file);
-        // 'single quote'|trans
-        if (preg_match_all("/{{ '([^|}]*)'\|\s*trans }}/s",$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                if (!in_array($t,$strings)) {
-                    $strings[]=$t;
+        // only found in templates
+        if ($isTwig($file)) {
+            // 'single quote'|trans
+            if (preg_match_all("/{{ '([^|}]*)'\|\s*trans }}/s",$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
+                }
+            }
+            // "double quotes"|trans
+            if (preg_match_all('/{{ "([^|}]*)"\|\s*trans }}/s',$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
+                }
+            }
+            // app.translator.trans('single_quote_demo'...
+            if (preg_match_all("/\bapp.translator.trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
+                }
+            }
+            // app.translator.trans("double_quote_demo"...
+            if (preg_match_all('/\bapp.translator.trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
                 }
             }
         }
-        // "double quotes"|trans
-        if (preg_match_all('/{{ "([^|}]*)"\|\s*trans }}/s',$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                if (!in_array($t,$strings)) {
-                    $strings[]=$t;
+        // only found in php
+        if ($isPhp($file)) {
+            // strip multi-lines comments
+            $s = preg_replace("#(/\*(?U)[^/]*\*/)#",'',$s);
+            // strip until-eof comments
+            $s = preg_replace("#(//(?U)[^\r\n]*\n)#",'',$s);
+
+            // $app ['translator'] -> trans('single quote form 1...
+            // $app ["translator"] -> trans('single quote form 2...
+            if (preg_match_all("/app\[(?:'|\")translator(?:'|\")\]->trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    //$t .= ' (1)';
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
                 }
             }
-        }
-        // app.translator.trans('single quote'...
-        if (preg_match_all("/\bapp.translator.trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                if (!in_array($t,$strings)) {
-                    $strings[]=$t;
-                }
-            }
-        }
-        // app.translator.trans("double quote"...
-        if (preg_match_all('/\bapp.translator.trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                if (!in_array($t,$strings)) {
-                    $strings[]=$t;
-                }
-            }
-        }
-    }
-    $php_finder = new Finder();
-    $php_finder->files()
-        ->ignoreVCS(true)
-        ->name('*.php')
-        ->notName('*~')
-        ->in(__DIR__)
-    ;
-    $php_strings=array();
-    foreach ($php_finder as $file) {
-        $s = file_get_contents($file);
-        // $app ['translator'] -> trans('single quote form 1...
-        // $app ["translator"] -> trans('single quote form 2...
-        if (preg_match_all("/app\[(?:'|\")translator(?:'|\")\]->trans\('((?U)[^']*)'(?U).*\)/s",$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                //$t .= ' (1)';
-                if (!in_array($t,$php_strings)) {
-                    $php_strings[]=$t;
-                }
-            }
-        }
-        // $app ['translator'] -> trans("double quote...
-        // $app ["translator"] -> trans("double quote form 2...
-        //if (preg_match_all('/app\[\'translator\'\]->trans\("([^"]*)".*\)/s',$s,$matches)) {
-        if (preg_match_all('/app\[(?:\'|")translator(?:\'|")\]->trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
-            //print_r($matches[1]);
-            foreach($matches[1] as $t) {
-                $nstr++;
-                //$t .= ' (2)';
-                if (!in_array($t,$php_strings)) {
-                    $php_strings[]=$t;
+            // $app ['translator'] -> trans("double quote...
+            // $app ["translator"] -> trans("double quote form 2...
+            //if (preg_match_all('/app\[\'translator\'\]->trans\("([^"]*)".*\)/s',$s,$matches)) {
+            if (preg_match_all('/app\[(?:\'|")translator(?:\'|")\]->trans\("((?U)[^"]*)"(?U).*\)/s',$s,$matches)) {
+                //print_r($matches[1]);
+                foreach($matches[1] as $t) {
+                    $nstr++;
+                    //$t .= ' (2)';
+                    if (!in_array($t,$strings)) {
+                        $strings[]=$t;
+                    }
                 }
             }
         }
     }
     sort($strings);
-    sort($php_strings);
-    return $app['twig']->render('prep-translations.html.twig', array(
+    $locale = $app['request']->getLocale();
+    $translations = "";
+    foreach($strings as $idx=>$key) {
+        if (strpos(':',$key) !== false) {
+            $translations .= ("# WARNING!! string with column in it can't be translated with yaml -- ($key)\n");
+        } elseif( ($trans = $app['translator']->trans($key)) == $key ) {
+            $translations .= ("$key: ## $trans **\n");
+        } else {
+            $translations .= ("$key: " . $app['translator']->trans($key) . "\n");
+        }
+    }
+    //$translations = addslashes($translations);
+    $form = $app['form.factory']->createBuilder('form',array('translations' => $translations))
+        ->add('translations', 'textarea', array(
+                'label'      => $app['translator']->trans('Translations'),
+                'attr' => array(
+                    'rows'=>10,
+                    'style'=>'width:98%',
+                    'class'=>'CodeMirror-scroll' )
+            ))
+        ->getForm();
+
+    if ('POST' === $app['request']->getMethod()) {
+        $form->bindRequest($app['request']);
+
+        if ($form->isValid()) {
+            $translated = $form->get('translations')->getData();
+            // TODO: check there is no ':' in translations either
+            // TODO: remove not translated
+            // TODO: ask confirmation and/or make a backup before replacing the file !!!
+            try {
+                $filename = __DIR__."/../resources/locales/$locale.yml";
+                if (!is_writable($filename)) {
+                    $msg = $app['translator']->trans("Can't open file '%filename%' in write mode.",array(
+                        '%filename%' => $filename
+                        ));
+                    throw new \Exception($msg);
+                }
+                $fp = fopen($filename,'w');
+                if ($fp) {
+                    fwrite($fp,$translated);
+                    fclose($fp);
+                    $msg=$app['translator']->trans("Translation '%locale%' saved in %filename%.",array(
+                        '%locale%'=>$locale,'%filename%',$filename
+                    ));
+                    $app['session']->setFlash('success', $msg);
+                } else {
+                    $msg = $app['translator']->trans("Can't open file '%filename%' in write mode.",array(
+                        '%filename%' => $filename
+                        ));
+                    throw new \Exception($msg);
+                }
+            } catch (\Exception $e) {
+                $app['session']->setFlash('error', $e->getMessage());
+            }
+        }
+    }
+
+    return $app['twig']->render('translations.html.twig', array(
         'nstr' => $nstr,
-        'strings' => $strings,
-        'php_strings' => $php_strings,
+        'form' => $form->createView(),
     ));
 })
-->bind('prep-translations')
+->bind('translations')
 ;
 
-//=====================
 /*--------------------------------------------------------------------*
  * encode
  *--------------------------------------------------------------------*/
-$app->match('/encode', function() use ($app) {
+$app->match('/{_locale}/encode', function() use ($app) {
     $form = $app['form.factory']->createBuilder('form')
         ->add('password', 'text', array(
-            'label'       => 'Password',
+            'label'       => $app['translator']->trans('Password'),
             'constraints' => array(
                 new Assert\NotBlank(),
             ),
@@ -159,7 +228,7 @@ $app->match('/encode', function() use ($app) {
 /*--------------------------------------------------------------------*
  * login
  *--------------------------------------------------------------------*/
-$app->match('/login', function() use ($app) {
+$app->match('/{_locale}/login', function() use ($app) {
     $request = $app['request'];
 
     return $app['twig']->render('login.html.twig', array(
@@ -172,16 +241,17 @@ $app->match('/login', function() use ($app) {
 /*--------------------------------------------------------------------*
  * logout
  *--------------------------------------------------------------------*/
-$app->match('/logout', function() use ($app) {
+$app->match('/{_locale}/logout', function() use ($app) {
     $app['session']->clear();
 
     return $app->redirect($app['url_generator']->generate('homepage'));
-})->bind('logout');
+})
+->bind('logout');
 
 /*--------------------------------------------------------------------*
  * phpinfo
  *--------------------------------------------------------------------*/
-$app->get('/phpinfo', function() use ($app) {
+$app->get('/{_locale}/phpinfo', function() use ($app) {
 
     ob_start();
     phpinfo();
@@ -204,9 +274,13 @@ $app->get('/phpinfo', function() use ($app) {
 ->bind('phpinfo');
 
 /*--------------------------------------------------------------------*
- * TODO: doc
+ * doc
  *--------------------------------------------------------------------*/
-$app->get('/doc', function() use ($app) {
+$app->get('/{_locale}/doc', function() use ($app) {
+    $locale = $app['translator']->getLocale();
+    if ($locale == 'fr') {
+        return $app['twig']->render('doc_fr.html.twig');
+    }
     return $app['twig']->render('doc.html.twig');
 
 })
@@ -215,7 +289,7 @@ $app->get('/doc', function() use ($app) {
 /*--------------------------------------------------------------------*
  * profile
  *--------------------------------------------------------------------*/
-$app->match('/profile', function() use ($app) {
+$app->match('/{_locale}/profile', function() use ($app) {
     $pb = $app['pastebin'];
     $user = $app['security']->getToken();
     $data = array(
@@ -244,11 +318,11 @@ $app->match('/profile', function() use ($app) {
         ->add('pb_api_key','text')
         ->add('pb_exposure','choice',  array(
             'choices'  => $exposure_choices,
-            'label' => 'Paste exposure'
+            'label' => $app['translator']->trans('Paste exposure')
         ))
         ->add('pb_expiration','choice',  array(
             'choices'  => $expiration_choices,
-            'label' => 'Paste expiration'
+            'label' => $app['translator']->trans('Paste expiration')
         ))
         ->getForm()
     ;
@@ -264,7 +338,7 @@ $app->match('/profile', function() use ($app) {
                 $app['db']->update('users',array('password'=>$encoded),
                     array('username' => $user->getUsername())
                 );
-                $app['session']->setFlash('success', "Password changed");
+                $app['session']->setFlash('success', $app['translator']->trans('Password changed'));
             }
             $changed = false;
             foreach(array('username','password','api_key','exposure','expiration') as $key) {
@@ -275,13 +349,13 @@ $app->match('/profile', function() use ($app) {
             }
             if ($changed) {
                 $app['pastebin']->updateUser($username,$password,$api_key,$exposure,$expiration);
-                $app['session']->setFlash('success', "Modifications saved");
+                $app['session']->setFlash('success', $app['translator']->trans('Modifications saved'));
             } else {
-                $app['session']->setFlash('info', "No pastebin.com profile infos changed");
+                $app['session']->setFlash('info', $app['translator']->trans('No pastebin.com profile infos changed'));
             }
             return $app->redirect($app['url_generator']->generate('homepage'));
         } else {
-            $app['session']->setFlash('error', "Error processing your data !!");
+            $app['session']->setFlash('error', $app['translator']->trans('Error processing your data !!'));
         }
     }
 
@@ -300,7 +374,15 @@ $app->match('/profile', function() use ($app) {
 /*--------------------------------------------------------------------*
  * delete_snippet
  *--------------------------------------------------------------------*/
-$app->match('/delete_snippet/{lang}/{name}', function($lang,$name) use ($app) {
+//$app->match('/{_locale}/delete_snippet/{lang}/{name}', function($lang,$name) use ($app) {
+$app->match('/{_locale}/delete_snippet', function() use ($app) {
+    if ( ($name = $app['request']->get('name')) === null) {
+        throw new \Exception("delete_snippet() missing arg 'name'");
+    }
+    if ( ($lang = $app['request']->get('lang')) === null) {
+        throw new \Exception("delete_snippet() missing arg 'lang'");
+    }
+
     if ($lang == 'php') {
         $snippet = new Snippet($app['db']);
     } elseif ($lang == 'js') {
@@ -327,20 +409,25 @@ $app->match('/delete_snippet/{lang}/{name}', function($lang,$name) use ($app) {
             $name = $form->get('name')->getData();
             $lang = $form->get('lang')->getData();
             $snippet->deleteSnippet($name,$lang);
-            $app['session']->setFlash('success', "$lang Snippet named $name deleted");
+            $msg = $app['translator']->trans("%lang% Snippet named '%name%' deleted",array(
+                '%lang%' => $lang,
+                '%name%'=>$name
+            ));
+            $app['session']->setFlash('success', $msg);
             return $app->redirect($app['url_generator']->generate($lang));
         } else {
-            $app['session']->setFlash('error', "Error deleting snippet !!");
+            $app['session']->setFlash('error', $app['translator']->trans('Error deleting snippet !!'));
         }
     }
 
 
     return $app['twig']->render('del_snippet.html.twig', array(
         'active' => $lang,
-        'page_title' => 'Confirm deleting a snippet',
+        'page_title' => $app['translator']->trans('Confirm deleting a snippet'),
         'name' => $name,
         'lang' => $lang,
-        'form' => $form->createView()
+        'form' => $form->createView(),
+        'DEBUG_CALL' => true
         )
     );
 
@@ -351,7 +438,7 @@ $app->match('/delete_snippet/{lang}/{name}', function($lang,$name) use ($app) {
 /*--------------------------------------------------------------------*
  * clear the cache
  *--------------------------------------------------------------------*/
-$app->get('/clearcache', function() use ($app) {
+$app->get('/{_locale}/clearcache', function() use ($app) {
     $out = '';
     $err = '';
     $finder = new Finder();
@@ -369,13 +456,16 @@ $app->get('/clearcache', function() use ($app) {
         }
     }
     if (!empty($out)) {
-        $app['session']->setFlash('info',"<b>Files deleted</b><br/>:$out");
+        $msg = $app['translator']->trans('Files deleted');
+        $app['session']->setFlash('info',"<b>$msg</b>:<br/>$out");
     }
     if (!empty($err)) {
-        $app['session']->setFlash('error',"<b>Files not deleted</b><br/>:$err");
-        $app['session']->setFlash('warn', "Cache not completely cleared");
+        $msg1 = $app['translator']->trans('Files not deleted');
+        $msg2 = $app['translator']->trans('Cache not completely cleared');
+        $app['session']->setFlash('error',"<b>$msg1</b><br/>:$err");
+        $app['session']->setFlash('warn', $msg2);
     } else {
-        $app['session']->setFlash('success', "Cache have been cleared");
+        $app['session']->setFlash('success', $app['translator']->trans('Cache have been cleared'));
     }
     return($app->redirect($app['url_generator']->generate('homepage')));
 })

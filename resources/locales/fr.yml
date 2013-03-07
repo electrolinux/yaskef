@@ -1,35 +1,64 @@
-%username%'s profile: Profil de %username%
-Account: Compte
-Clear cache: Vider le cache
-Delete: Supprimer
-Encoding password: Encodage du mot de passe
-Form: Formulaire
-Help: Aide
-Javascript:
-Login: Connexion
-Logout: Déconnexion
-PHP:
-PHP infos: Infos PHP
-Password encoder: Encodeur de mot de passe
-Paste to pastebin.com: Copier sur pastebin.com
-Please confirm snippet deletion: SVP, confirmez la suppression du fragment
-Prepare translations: Préparer les traductions
-Profile: Profil
-SQL:
-Save: Enregistrer
-Send: Envoyer
-Test: Test
-Tools: Outils
-Translatable strings: Chaînes traduisibles
-Translations: Traductions
-Yaskef !:
-Yaskef User Guide: Guide de l'utilisateur Yaskef
-Yes, delete this snippet: Oui, supprimer ce fragment
-connect: connexion
+%lang% Snippet named '%name%': Fragment %lang% nommé '%name%'
+%lang% Snippet named '%name%' deleted: Le fragment %lang% nommé '%name%' a été supprimé
+%lang% Snippet...: Fragment %lang%...
+%name% (%nrows% rows): %name% (%nrows% lignes)
+%username%'s profile: Profile de %username%
 <h2>Welcome to yaskef !</h2>: <h2>Bienvenue à Yaskef !</h2>
+Account: Compte
+Cache have been cleared: Le cache a été vidé
+Cache not completely cleared: Le cache n'a pas été complètement vidé
 Can't delete without 'name' !!: Suppression impossible sans un «nom»
+Can't open file '%filename%' in write mode.: Impossible d'ouvrir le fichier '%filename%' en écriture.
 Can't paste to pastebin without 'code' !!: Copie vers pastebin impossible sans «code»
 Can't save without 'name' and 'code' !!: Sauvegarde impossible sans «nom» ni «code»
+Clear cache: Vider le cache
+Closing php tag, use or namespace found. Syntax check disabled.: Balise de fermeture php, «use» ou «namespace» trouvé. La vérification de syntaxe est désactivée.
+Code: Code
+Comments: Commentaires
+Confirm deleting a snippet: Confirmez la suppression d'un fragment
+Delete: Supprimer
+Encoding password: Encodage d'un mot de passe
+Error deleting snippet !!: Erreur en supprimant le fragment !!
 Error executing your code: Erreur en exécutant votre code
-Opening or closing php tags found. Syntax check is disabled for mixed content: Tags ouvrant ou fermant trouvés. la vérification de syntaxe est désactivée pour un contenu mixte.
+Error processing your data !!: Erreur en traitant vos données !!
+Files deleted: Fichiers supprimés
+Files not deleted: Fichiers non supprimés
+Help: Aide
+Homepage: Accueil
+Javascript: 
+Keep me logged in: Se souvenir de moi
+Login: S'identifier
+Logout: Se déconnecter
+Modifications saved: Les modifications ont été enregistrées
+More: Plus
+Name: Nom
+No pastebin.com profile infos changed: Aucune information de profile pastebin.com n'a changé
+PHP: 
+PHP infos: Infos PHP
+Password: Mot de passe
+Password changed: Mot de passe changé
+Password encoder: Encodeur de mot de passe
+Paste expiration: Expiration de la copie
+Paste exposure: Confidentialité de la copie
+Paste to pastebin.com: Copier sur pastebin.com
+Please confirm snippet deletion: Veuillez confirmer la suppression du fragment
+Please login: Veuillez vous identifier
+Pre-formatted result: Résultats pré-formatés
+Profile: Profil
+Results: Résultats
+SQL: 
+Save: Enregistrer
+Save as: Enregistrer sous
+Send: Envoyer
+Test: Tester
+Tools: Outils
+Translatable strings: Chaînes traduisibles
+Translation '%locale%' saved in %filename%.: Traduction '%locale%' enregistrée dans %filename%.
+Translations: Traductions
+Username: Nom d'utilisateur
+Yaskef !: 
+Yaskef User Guide: Guide de l'utilisateur Yaskef
 Yaskef versatile interpretor, %mode% mode: Interpreteur versatile Yaskef, en mode %mode%
+Yes, delete this snippet: Oui, supprimer ce fragment
+connect: Se connecter
+snippet '%name%' saved.: fragment «%name%» enregistré.

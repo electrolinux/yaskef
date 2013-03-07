@@ -1,8 +1,8 @@
 <?php
 
 // Locale
-$app['locale'] = 'fr';
-$app['session.default_locale'] = $app['locale'];
+//$app['locale'] = 'fr';
+//$app['session.default_locale'] = 'en';//$app['locale'];
 $app['translator.messages'] = array(
     'fr' => __DIR__.'/../resources/locales/fr.yml',
 );
@@ -45,17 +45,27 @@ $app['db.options'] = array(
 
 // Security
 $app['security.firewalls'] = array(
-    'login' => array('pattern' => '^/login$','anonymous'=>true), // Example of an url available as anonymous user
+    'login' => array('pattern' => '^/(fr|en)/login$','anonymous'=>true), // Example of an url available as anonymous user
     //'infos' => array('pattern' => '^/phpinfo$','anonymous' => true),
     //'encode' => array('pattern' => '^/encode$','anonymous' => true),
     'default' => array(
         'pattern' => '^.*$',
         //'anonymous' => true,
-        'form' => array('login_path' => '/login', 'check_path' => 'login_check'),
-        'logout' => array('logout_path' => '/logout'), // url to call for logging out
+        'form' => array(
+            'login_path' => 'login',
+            'check_path' => 'login_check',
+            'default_target_path' => '/{_locale}',
+        ),
+        'logout' => array('logout_path' => 'logout'), // url to call for logging out
+
         'users' => $app->share(function() use ($app) {
             return new Oclane\UserProvider($app['db']);
         }),
+        /*'remember_me' => array(
+            'key'       => "superT0p3xtr4S33cr33tgkjhgkjhguiytuy_-_uyuy||uy4581458!",
+            'lifetime'  => 31536000, // 365 jours en secondes
+            'path'      => '/'
+        ),*/
     ),
 );
 

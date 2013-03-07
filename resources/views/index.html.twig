@@ -1,9 +1,24 @@
 {% extends 'layout.html.twig' %}
-{% set active = active|default('homepage') %}
+{% set active = active|default('php') %}
+{% set lang = active|default('php') %}
+{% set cmmode = lang == 'js' ? 'javascript' : lang == 'sql' ? 'text/x-sql' : lang %}
+
+{% block style %}
+{{ parent() }}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/codemirror.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/neat.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/cobalt.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/elegant.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/eclipse.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/monokai.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/solarized.css">
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/ambiance.css">
+{% endblock %}
 
 {% block content %}
     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
         {% set api_key = app.pastebin.getApiUserKey() %}
+        {% set lang = active|default('php') %}
 
         <div class="accordion" id="accordion">
             <div class="accordion-group">
@@ -21,7 +36,7 @@
                             </div>
                             <div class="accordion-group control-group">
                                 <div class="accordion-heading">
-                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#collapseMore">More</a>
+                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#collapseMore">{{ 'More'|trans }}</a>
                                 </div>
                                 <div id="collapseMore" class="accordion-body collapse">
                                     {{ form_rest(form) }}
@@ -58,22 +73,48 @@
         </div><!-- #accordion -->
 
     {% else %}
-
+        {# the firewall prevent accessing this #}
         <h2>Not logged !</h2>
         Your a not logged. Please <a href="{{ path('login') }}">{{ 'connect'|trans }}</a>
     {% endif %}
 {% endblock %}
 
 {% block javascript %}
-{{ parent() }}
+    {{ parent() }}
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/codemirror.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/xml/xml.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/javascript/javascript.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/css/css.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/clike/clike.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/sql/sql.js"></script>
+    <script src="{{ app.request.basepath }}/js/libs/codemirror/mode/php/php.js"></script>
+
+
 <script type="text/javascript">
+    var cmMode="{{ cmmode }}";
 {% verbatim %}
     $(document).ready(function () {
+
+        // codemirror editor
+        var cmEditor = CodeMirror.fromTextArea(document.getElementById("form_code"), {
+            lineNumbers: true,
+            theme: 'solarized',
+            matchBrackets: true,
+            //mode: "application/x-httpd-php",
+            mode: cmMode,
+            indentUnit: 4,
+            indentWithTabs: true,
+            enterMode: "keep",
+            tabMode: "shift"
+        });
 
         // jquery objects used
         var $needcode = $("button.need-code"),
             $needname = $("button.need-name"),
-            $formcode = $("#form_code"),
+            //$formcode = $("#form_code"),
+            //$formcode = cmEditor || $("#form_code"),
             $formname = $("#form_name"),
             // snippets
             codes=Array(),
@@ -81,7 +122,12 @@
             comments=Array();
 
         var setEnabled = function() {
-            if($formcode.val() == '') {
+            /*if($formcode.val() == '') {
+                $needcode.attr('disabled','disabled');
+            } else {
+                $needcode.removeAttr('disabled');
+            }*/
+            if(cmEditor.getValue() == '') {
                 $needcode.attr('disabled','disabled');
             } else {
                 $needcode.removeAttr('disabled');
@@ -107,7 +153,8 @@
         $("#form_snippet").change(function()
         {
             var key = $("#form_snippet").val();
-            $("#form_code").text(codes[key]);
+            //$("#form_code").text(codes[key]);
+            cmEditor.setValue(codes[key]);
             $("#form_name").val(key);
             $("#form_html").text(htmls[key]);
             $("#form_comment").text(comments[key]);
@@ -125,14 +172,17 @@
 {% verbatim %}
 
         // on change
-        $formcode.change(function(){setEnabled();});
+        //$formcode.change(function(){setEnabled();});
+        cmEditor.on("change",function(){setEnabled();});
         $formname.change(function(){setEnabled();});
         // on key up
-        $formcode.keyup(function(){setEnabled();});
+        //$formcode.keyup(function(){setEnabled();});
+        cmEditor.on("cursorActivity",function(){setEnabled();});
         $formname.keyup(function(){setEnabled();});
 
         // and right now
         setEnabled();
+
 
 });
 {% endverbatim %}

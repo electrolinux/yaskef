@@ -9,7 +9,7 @@ use Doctrine\DBAL\DriverManager;
 
 use Oclane\CreateUserCommand;
 
-$console = new Application('PHPLive ! (fork of Silex - Kitchen Edition)', '0.1');
+$console = new Application('Yaskef console', '0.1');
 
 $console
     ->register('assetic:dump')

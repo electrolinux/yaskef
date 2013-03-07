@@ -1,0 +1,22 @@
+<?php
+$code="<?php
+/* multiline comment just for see if i can exclude them from check
+use Name\Space\Cant\Be\Evaluated;
+namespace Also\Cant\Be\Used\In\Eval;
+*/
+echo \"hello,world!\n\";
+/* some more
+*/
+echo \" - Fine ?\n\";
+// and this one: use it
+echo \"Ok...\n\";
+";
+
+// uncomment to disable syntax check
+//use Silex\Application;
+
+	$code = preg_replace("/^<\?php((?U)\s|\n)*/",'',$code);
+	$code = preg_replace("#(/\*(?U)[^*]*\*/)#",'',$code);
+	$code = preg_replace("#(//(?U)[^\n]*\n)#",'',$code);
+	echo htmlentities($code) . "\n";
+    eval($code);

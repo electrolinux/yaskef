@@ -4,10 +4,11 @@
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>{{ page_title|default('Homepage')|trans }}</title>
+    <title>{{ page_title|default(app.translator.trans('Homepage')) }}</title>
 
     <meta name="description" content="">
     <meta name="author" content="">
@@ -46,12 +47,11 @@
                             </a>
                             <ul class="dropdown-menu">
                             <li><a href="{{ path('clearcache') }}">{{ 'Clear cache'|trans }}</a></li>
-                            <li><a href="{{ path('prep-translations') }}">{{ 'Prepare translations'|trans }}</a></li>
+                            <li><a href="{{ path('translations') }}">{{ 'Translations'|trans }}</a></li>
                             <li><a href="{{ path('encode') }}">{{ 'Password encoder'|trans }}</a></li>
                             <li><a href="{{ path('phpinfo') }}">{{ 'PHP infos'|trans }}</a></li>
                             </ul>
                         </li>
-                        <li {% if 'doc' == active %}class="active"{% endif %}><a href="{{ path('doc') }}">{{ 'Help'|trans }}</a></li>
                         <li class="dropdown{% if 'account' == active %} active{% endif %}">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
@@ -70,6 +70,15 @@
                                 {% endif %}
                             </ul>
                         </li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li class="{% if 'doc' == active %} active{% endif %}"><a href="{{ path('doc') }}">{{ 'Help'|trans }}</a></li>
+                        {% set route = app.request.attributes.get('_route') %}
+                        {% if route  == 'login' %}{% set route = 'homepage' %}{% endif %}
+                        <li><a href="{{ path(route,{'_locale':'fr'}) }}">
+                            <img src="{{ app.request.basepath }}/assets/img/fr.png" alt="fr"/></a></li>
+                        <li><a href="{{ path(route,{'_locale':'en'}) }}">
+                            <img src="{{ app.request.basepath }}/assets/img/en.png" alt="en"/></a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>

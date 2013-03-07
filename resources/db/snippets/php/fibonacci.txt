@@ -1,3 +1,5 @@
+<?php
+
 function f($n) {
     static $t=array();
     if (array_key_exists("$n",$t)) {

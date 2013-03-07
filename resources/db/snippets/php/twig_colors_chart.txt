@@ -1,3 +1,5 @@
+<?php
+
 $color = array();
 $red=0;
 while ($red <= 15) {

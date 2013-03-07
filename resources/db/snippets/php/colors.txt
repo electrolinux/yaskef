@@ -1,3 +1,4 @@
+<?php
 $couleurs=array('green','red','orange','maroon','gray','cyan','magenta');
 for($x=100;$x<=400;$x+=50){
    $cl=$couleurs[rand(0,count($couleurs)-1)];
