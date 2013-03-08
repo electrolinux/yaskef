@@ -18,6 +18,8 @@ class PasteBin
 
     protected $db;
     protected $app;
+    protected $users_username;
+    protected $user_id;
     protected $pb_username;
     protected $pb_password;
     protected $pb_api_key;
@@ -38,13 +40,15 @@ class PasteBin
         if (null !== $token) {
             $username = $token->getUsername();
             $this->setUser($username);
-        }
-        if ($app['session']->get('pb_api_user_key')) {
-            $this->pb_api_user_key = $app['session']->get('pb_api_user_key');
-            $this->key_from_session = true;
+            if ($app['session']->get('pb_api_user_key')) {
+                $this->pb_api_user_key = $app['session']->get('pb_api_user_key');
+                $this->key_from_session = true;
+            } else {
+                $this->pb_api_user_key = $this->genApiUserKey();
+                $app['session']->set('pb_api_user_key',$this->pb_api_user_key);
+            }
         } else {
-            $this->pb_api_user_key = $this->genApiUserKey();
-            $app['session']->set('pb_api_user_key',$this->pb_api_user_key);
+            throw new \Exception('PasteBin without user...');
         }
     }
 
@@ -78,22 +82,33 @@ class PasteBin
         return $this->pb_api_user_key;
     }
 
-    public function setUser($username)
+    private function setUser($username)
     {
-        $stmt = $this->db->executeQuery(
-            'SELECT p.* FROM users u LEFT JOIN pastebin p ON p.user_id = u.id WHERE u.username = ?',
-            array(strtolower($username))
-        );
-        if (!$user = $stmt->fetch()) {
-            //throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
-            return false;
+        $this->users_username = $username;
+        try {
+            $stmt = $this->db->executeQuery(
+                'SELECT p.* FROM users u LEFT JOIN pastebin p ON p.user_id = u.id WHERE u.username = ?',
+                array(strtolower($username))
+            );
+            if ($pb = $stmt->fetch()) {
+                $this->pb_username   =  $pb['username'];
+                $this->pb_password   =  $pb['password'];
+                $this->pb_api_key    =  $pb['api_key'];
+                $this->pb_exposure   =  $pb['exposure'];
+                $this->pb_expiration =  $pb['expiration'];
+            } else {
+                $stmt = $this->db->executeQuery(
+                    'SELECT id,username FROM users WHERE username = ?',
+                    array(strtolower($username))
+                );
+                if ($user = $stmt->fetch()) {
+                    $this->user_id = $user['id'];
+                }
+            }
+        } catch (\Exception $e) {
+            $this->app['session']->setFlash('error',$e->getMessage());
         }
-
-        $this->pb_username   =  $user['username'];
-        $this->pb_password   =  $user['password'];
-        $this->pb_api_key    =  $user['api_key'];
-        $this->pb_exposure   =  $user['exposure'];
-        $this->pb_expiration =  $user['expiration'];
+        return $this;
     }
 
     public function genApiUserKey()
@@ -162,14 +177,35 @@ class PasteBin
 
     public function updateUser($username,$password,$api_key,$exposure,$expiration)
     {
-        $this->db->update('pastebin',array(
-            'password' => $password,
-            'api_key' => $api_key,
-            'exposure' => $exposure,
-            'expiration' => $expiration
-            ), array('username' => $username)
-        );
-        $this->app['session']->remove('pb_api_user_key');
+        try {
+            if (!$this->pb_username) {
+                // chance there is no entry in pastebin yet
+                if (!$this->user_id) {
+                    $msg = $this->app['translator']->trans('No user associated with this PasteBin');
+                    $this->app['session']->setFlash('error',$msg);
+                    return false;
+                }
+                $this->db->insert('pastebin', array(
+                    'user_id' => $this->user_id,
+                    'username' => $username,
+                    'password' => $password,
+                    'api_key' => $api_key,
+                    'exposure' => $exposure,
+                    'expiration' => $expiration
+                    ));
+            } else {
+                $this->db->update('pastebin',array(
+                    'password' => $password,
+                    'api_key' => $api_key,
+                    'exposure' => $exposure,
+                    'expiration' => $expiration
+                    ), array('username' => $username)
+                );
+            }
+            $this->app['session']->remove('pb_api_user_key');
+        } catch(\Exception $e) {
+            $this->app['session']->setFlash('error',$e->getMessage());
+        }
     }
 }
 

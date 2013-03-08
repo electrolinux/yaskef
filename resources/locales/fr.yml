@@ -13,9 +13,16 @@ Can't paste to pastebin without 'code' !!: Copie vers pastebin impossible sans �
 Can't save without 'name' and 'code' !!: Sauvegarde impossible sans «nom» ni «code»
 Clear cache: Vider le cache
 Closing php tag, use or namespace found. Syntax check disabled.: Balise de fermeture php, «use» ou «namespace» trouvé. La vérification de syntaxe est désactivée.
-Code: Code
+Code: ## Code **
 Comments: Commentaires
+Configure Database: Configurer la base de données
 Confirm deleting a snippet: Confirmez la suppression d'un fragment
+Create the first user: Créer le premier utilisateur
+Database '%name%' created.: La base de données '%name%' est créée. **
+Database Driver: Pilote de base de données
+Database already created.: La base de données est déjà créée.
+Database configuration created: La configuration de la base de données est créée.
+Database ready: La base de données est prête
 Delete: Supprimer
 Encoding password: Encodage d'un mot de passe
 Error deleting snippet !!: Erreur en supprimant le fragment !!
@@ -23,17 +30,21 @@ Error executing your code: Erreur en exécutant votre code
 Error processing your data !!: Erreur en traitant vos données !!
 Files deleted: Fichiers supprimés
 Files not deleted: Fichiers non supprimés
+First User configured ok.: Le premier utilisateur est créé
 Help: Aide
 Homepage: Accueil
-Javascript: 
+Javascript: ## Javascript **
 Keep me logged in: Se souvenir de moi
 Login: S'identifier
 Logout: Se déconnecter
 Modifications saved: Les modifications ont été enregistrées
 More: Plus
+MySQL need a least a hostname, a database name and a username: MySQL a besoin d'au moins un nom d'hôte, un nom de base de donnée et un utilisateur
 Name: Nom
+Next: Suivant
 No pastebin.com profile infos changed: Aucune information de profile pastebin.com n'a changé
-PHP: 
+No user associated with this PasteBin: Aucun utilisateur associé à ce PasteBin
+PHP: ## PHP **
 PHP infos: Infos PHP
 Password: Mot de passe
 Password changed: Mot de passe changé
@@ -46,7 +57,8 @@ Please login: Veuillez vous identifier
 Pre-formatted result: Résultats pré-formatés
 Profile: Profil
 Results: Résultats
-SQL: 
+SQL: ## SQL **
+SQLite driver need a path for the db: Le pilote SQlite a besoin d'un chemin pour sa base de donnée
 Save: Enregistrer
 Save as: Enregistrer sous
 Send: Envoyer
@@ -56,9 +68,11 @@ Translatable strings: Chaînes traduisibles
 Translation '%locale%' saved in %filename%.: Traduction '%locale%' enregistrée dans %filename%.
 Translations: Traductions
 Username: Nom d'utilisateur
-Yaskef !: 
+Yaskef !: ## Yaskef ! **
 Yaskef User Guide: Guide de l'utilisateur Yaskef
-Yaskef versatile interpretor, %mode% mode: Interpreteur versatile Yaskef, en mode %mode%
+Yaskef installation: Installation de Yaskef
+Yaskef versatile interpretor installation: Installation de l'interpréteur versatile Yaskef
+Yaskef versatile interpretor, %mode% mode: Interpréteur versatile Yaskef, en mode %mode%
 Yes, delete this snippet: Oui, supprimer ce fragment
 connect: Se connecter
 snippet '%name%' saved.: fragment «%name%» enregistré.
