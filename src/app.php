@@ -89,6 +89,16 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 }
 
 $app->register(new Silex\Provider\DoctrineServiceProvider());
+
+// check db
+if (!Oclane\Installer::checkDatabase($app)) {
+    // install
+    $app['security.firewalls'] = $app['install_firewalls'];
+    $app['security.access_rules'] = $app['install_access_rules'];
+} else {
+    $app['security.firewalls'] = $app['prod_firewalls'];
+    $app['security.access_rules'] = $app['prod_access_rules'];
+}
 $app->register(new Silex\Provider\SecurityServiceProvider());
 
 return $app;

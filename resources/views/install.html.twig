@@ -1,0 +1,79 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>{{ page_title|default(app.translator.trans('Homepage')) }}</title>
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <meta name="viewport" content="width=device-width">
+
+    {% block style %}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/assets/css/styles.css">
+    {% endblock %}
+
+    <script src="{{ app.request.basepath }}/js/libs/modernizr-2.5.3-respond-1.1.0.min.js"></script>
+{% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ app.request.basepath }}/js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+    <script src="{{ app.request.basepath }}/assets/js/scripts.js"></script>
+{% endblock javascript %}
+</head>
+<body>
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+
+    {% set active = active|default(null) %}
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="{{ path('homepage') }}"
+                    title="Yet Another Silex-Kitchen-Edition Fork !">{{ 'Yaskef !'|trans }}</a>
+                <div class="nav-collapse">
+                    <ul class="nav pull-right">
+                        {% set route = app.request.attributes.get('_route') %}
+                        {% if route  == 'login' %}{% set route = 'homepage' %}{% endif %}
+                        <li><a href="{{ path(route,{'_locale':'fr'}) }}">
+                            <img src="{{ app.request.basepath }}/assets/img/fr.png" alt="fr"/></a></li>
+                        <li><a href="{{ path(route,{'_locale':'en'}) }}">
+                            <img src="{{ app.request.basepath }}/assets/img/en.png" alt="en"/></a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="main" role="main" class="container">
+            {% set alertTypeAvaillable = [ 'info', 'success', 'warning', 'error'] %}
+            {% for alert in alertTypeAvaillable %}
+                {% if app.session.hasFlash(alert) %}
+                        <div class="alert alert-{{ alert }}" >
+                            <button class="close" data-dismiss="alert">×</button>
+                            {{ app.session.flash(alert)|trans|raw }}
+                        </div>
+                {% endif %}
+            {% endfor %}
+
+            <h2>{{ 'Yaskef installation'|trans }}</h2>
+
+            <h3>{{ stepTitle }}</h3>
+            <div class="info">{{ message }}</div>
+            <form action="{{ url }}" method="post" novalidate class="form-vertical">
+                {{ form_errors(form) }}
+
+                {{ form_widget(form) }}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">{{ 'Next'|trans }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

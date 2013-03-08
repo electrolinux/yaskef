@@ -7,7 +7,42 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Finder\Finder;
 
-$app['locales']=array('en','fr','es','de');
+if (!Installer::checkDatabase($app)) {
+    $app['debug'] = true;
+    $app->mount('/install', new Installer());
+    $app->match('/{_locale}', function() use ($app) {
+        return $app->redirect($app['url_generator']->generate('install',array(
+            '_locale'=> $app['request']->getLocale()
+        )));
+    })
+    ->value('_locale','en')
+    ->bind('homepage');
+    /*--------------------------------------------------------------------*
+     * login
+     *--------------------------------------------------------------------*/
+    $app->match('/{_locale}/login', function() use ($app) {
+        $request = $app['request'];
+
+        return $app['twig']->render('login.html.twig', array(
+            'error' => $app['security.last_error']($request),
+            'last_username' => $app['session']->get('_security.last_username'),
+        ));
+    })
+    ->bind('login');
+
+    /*--------------------------------------------------------------------*
+     * logout
+     *--------------------------------------------------------------------*/
+    $app->match('/{_locale}/logout', function() use ($app) {
+        $app['session']->clear();
+
+        return $app->redirect($app['url_generator']->generate('homepage'));
+    })
+    ->bind('logout');
+    return $app;
+}
+//only if not installing
+//$app->register(new Silex\Provider\SecurityServiceProvider());
 
 $app->mount('/code', new CodeController());
 

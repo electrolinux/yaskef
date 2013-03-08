@@ -1,8 +1,9 @@
 <?php
 
-// Locale
+// You can define your prefered default locale here
 //$app['locale'] = 'fr';
-//$app['session.default_locale'] = 'en';//$app['locale'];
+//$app['session.default_locale'] = 'en';
+$app['locales']=array('en','fr','es','de');
 $app['translator.messages'] = array(
     'fr' => __DIR__.'/../resources/locales/fr.yml',
 );
@@ -31,26 +32,39 @@ $app['assetic.output.path_to_js']       = 'js/scripts.js';
 $app['assetic.filter.yui_compressor.path'] = '/usr/share/yui-compressor/yui-compressor.jar';
 
 // Doctrine (db)
+$dbconf = __DIR__.'/db_config.php';
+if (file_exists($dbconf)) {
+    require_once($dbconf);
+} else {
+    require_once("$dbconf.dist");
+}
 $app['db.options'] = array(
-    'driver'    => 'pdo_sqlite',
-    'path'      => __DIR__ . '/../db/prod.db',
-/*
-    'driver'   => 'pdo_mysql',
-    'host'     => 'localhost',
-    'dbname'   => 'phplive',
-    'user'     => 'root',
-    'password' => '',
-*/
+    'driver'    => $db_driver,
+    'path'      => $db_path,
+    'host'      => $db_host,
+    'dbname'    => $db_name,
+    'user'      => $db_user,
+    'password'  => $db_password,
 );
 
 // Security
-$app['security.firewalls'] = array(
+$reglocales=implode('|',$app['locales']);
+
+// Installation firewall: we only check the client Ip
+$ReqInstallMatch = new \Symfony\Component\HttpFoundation\RequestMatcher();
+$ReqInstallMatch->matchIp('127.0.0.0/8');
+$app['install_firewalls'] = array(
+    'default'   => array('pattern' => $ReqInstallMatch,'anonymous'=>true),
+    );
+$app['install_access_rules'] = array(
+    array('^/$', ''),
+    array('^/('.$reglocales.')/install/.*$',''),
+);
+// prod firewall, need login
+$app['prod_firewalls'] = array(
     'login' => array('pattern' => '^/(fr|en)/login$','anonymous'=>true), // Example of an url available as anonymous user
-    //'infos' => array('pattern' => '^/phpinfo$','anonymous' => true),
-    //'encode' => array('pattern' => '^/encode$','anonymous' => true),
     'default' => array(
         'pattern' => '^.*$',
-        //'anonymous' => true,
         'form' => array(
             'login_path' => 'login',
             'check_path' => 'login_check',
@@ -61,19 +75,11 @@ $app['security.firewalls'] = array(
         'users' => $app->share(function() use ($app) {
             return new Oclane\UserProvider($app['db']);
         }),
-        /*'remember_me' => array(
-            'key'       => "superT0p3xtr4S33cr33tgkjhgkjhguiytuy_-_uyuy||uy4581458!",
-            'lifetime'  => 31536000, // 365 jours en secondes
-            'path'      => '/'
-        ),*/
     ),
 );
 
-$app['security.access_rules'] = array(
-    // You can rename ROLE_USER as you wish
+$app['prod_access_rules'] = array(
     array('^/login$', ''), // This url is available as anonymous user
-    //array('^/phpinfo$',''),
-    //array('^/encode$',''),
     array('^/.+$', 'ROLE_USER'),
 );
 
@@ -85,17 +91,7 @@ $app['pastebin'] = $app->share(function() use ($app) {
     return new Oclane\PasteBin($app);
 });
 
-/*
-$app['user_api_key'] = $app->share(function() use ($app) {
-    $api_key = false;
-    $token = $app['security']->getToken();
-    if (null !== $token) {
-        $username = $token->getUsername();
-        $api_key = $app['pastebin']->userApiKey($username);
-    }
-    return $api_key;
-});
-*/
+// needed somewhere in stolen code don't remember where
 define('CR',"\r");
 define('LF',"\n");
 define('CRLF',CR . LF);
