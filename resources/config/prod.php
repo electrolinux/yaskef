@@ -1,8 +1,8 @@
 <?php
 
 // You can define your prefered default locale here
-//$app['locale'] = 'fr';
-//$app['session.default_locale'] = 'en';
+$app['locale'] = 'fr';
+$app['session.default_locale'] = $app['locale'];
 $app['locales']=array('en','fr','es','de');
 $app['translator.messages'] = array(
     'fr' => __DIR__.'/../resources/locales/fr.yml',

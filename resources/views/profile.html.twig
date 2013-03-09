@@ -5,22 +5,23 @@
 
     <h2>{{ app.translator.trans("%username%'s profile",{'%username%':user.getUsername()}) }}</h2>
 
-    <form action="{{ path('profile') }}" method="post" novalidate class="form-vertical">
-        {{ error|default('') }}
-        <label for="_password">Password:</label>
-        {{ form_widget(form.password) }}
-        <fieldset><legend>Pastebin.com infos</legend>
+    <form action="{{ path('profile') }}" method="post" novalidate class="form-horizontal">
+        {{ form_errors(form) }}
 
-        <label for="pb_username">Username:</label>
-        {{ form_widget(form.pb_username) }}
-
-        <label for="pb_password">Password:</label>
-        {{ form_widget(form.pb_password) }}
-
-        <label for="pb_api_key">Api Key:</label>
-        {{ form_widget(form.pb_api_key) }}
-
+        <fieldset><h4>{{ 'General Options'|trans }}</h4>
+        {{ form_row(form.password) }}
+        {{ form_row(form.start_page) }}
+        {{ form_row(form.editor_style) }}
         </fieldset>
+
+        <fieldset><h4>{{ 'Pastebin Options'|trans }}</h4>
+            {{ form_row(form.pb_username) }}
+            {{ form_row(form.pb_password) }}
+            {{ form_row(form.pb_api_key) }}
+            {{ form_row(form.pb_exposure) }}
+            {{ form_row(form.pb_expiration) }}
+        </fieldset>
+
         {{ form_rest(form) }}
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{{ 'Save'|trans }}</button>

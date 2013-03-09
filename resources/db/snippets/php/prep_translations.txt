@@ -1,4 +1,5 @@
 <?php
+
 use Symfony\Component\Finder\Finder;
 $finder = new Finder();
 $finder->files()
@@ -7,23 +8,30 @@ $finder->files()
     ->notName('*~')
     ->in(__DIR__.'/../../src')
 ;
+// regex from: stackoverflow.com/questions/5695240/php-regex-to-ignore-escaped-quotes-within-quotes
+$re_dq = '/"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"/s';
+$re_sq = "/'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'/s";
 $nstr=0;
 foreach ($finder as $file) {
-  echo '# ' . basename($file) . "\n";
-  $s = file_get_contents($file);
-  if (preg_match_all("/app\['translator'\]->trans\('([^']*)'.*\)/s",$s,$matches)) {
-    //print_r($matches[1]);
-    foreach($matches[1] as $t) {
-      echo htmlentities("$t: \n");
-      $nstr++;
+    echo '# ' . basename($file) . "\n";
+    $s = file_get_contents($file);
+    //if (preg_match_all("/app\['translator'\]->trans\('([^']*)'.*\)/s",$s,$matches)) {
+    if (preg_match_all("/app\['translator'\]->trans\('([^'\\\\]*(?:\\\\.[^'\\\\]*)*)'(?U).*\)/s",$s,$matches)) {
+        //print_r($matches[1]);
+        foreach($matches[1] as $t) {
+            $t = stripslashes($t);
+            echo htmlentities("$t: \n");
+            $nstr++;
+        }
     }
-  }
-  if (preg_match_all("/app\['translator'\]->trans\(\"([^\"]*)\".*\)/s",$s,$matches)) {
-    //print_r($matches[1]);
-    foreach($matches[1] as $t) {
-      echo htmlentities("$t: \n");
-      $nstr++;
+    //if (preg_match_all("/app\['translator'\]->trans\(\"([^\"]*)\".*\)/s",$s,$matches)) {
+    if (preg_match_all('/app\[\'translator\'\]->trans\("([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"(?U).*\)/s',$s,$matches)) {
+        //print_r($matches[1]);
+        foreach($matches[1] as $t) {
+            $t = stripslashes($t);
+            echo htmlentities("$t: \n");
+            $nstr++;
+        }
     }
-  }
 }
 echo "# $nstr strings found\n";

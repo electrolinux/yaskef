@@ -102,16 +102,10 @@ EOT
         $db->insert('users', array(
             'username' => $username,
             'password' => $encoded,
+            'preferences' => serialize(array()),
             'roles' => $admin ? 'ROLE_ADMIN' :  'ROLE_USER'
         ));
-        $id = null;
-        $stmt = $db->executeQuery('SELECT id FROM users WHERE username = ?',array(
-            $username
-        ));
-        if (!$user = $stmt->fetch()) {
-            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
-        }
-        $id = $user['id'];
+        $id = $db->lastInsertId();
         if ($id and $pb_username and $pb_password and $pb_api_key) {
             $this->app['db']->insert('pastebin', array(
                 'user_id'  => $id,

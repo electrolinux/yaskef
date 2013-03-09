@@ -1,5 +1,5 @@
 <?php
-
+// stackoverflow.com/questions/571734/finding-all-string-in-a-php-code-base
 use Symfony\Component\Finder\Finder;
 $finder = new Finder();
 $finder->files()
@@ -14,22 +14,30 @@ $nstr=0;
 $ok=0;
 $nfiles=0;
 foreach ($finder as $file) {
-  $nfiles++;
-  echo '#--- ' . basename($file) . "\n";
-  $s = file_get_contents($file);
-  if (preg_match_all('/"((?U)[^"]*)"/s',$s,$matches)) {
-    //print_r($matches[1]);
-    foreach($matches[1] as $t) {
-      if (strpos($t,'$') !== false || strpos($t,"\n") !== false || strpos($t,"'") !== false) {
-        $ok++;
-        printf("%-65s%s (ok)\n", htmlentities(substr($t,0,65)),strlen($t) > 65 ? '...':'   ');
-      } else {
-        //echo htmlentities("$t\n");
-        $nstr++;
-      }
+    $nfiles++;
+    echo '#--- ' . basename($file) . "\n";
+    $s = file_get_contents($file);
+    $tokens = token_get_all($s);
+    foreach($tokens as $token) {
+        if ($token[0] != T_CONSTANT_ENCAPSED_STRING) {
+            //not a string, ignore
+            continue;
+        }
+        if ($token[1][0] == "'") {
+            continue;
+        }
+        $t = substr($token[1],1,strlen($token[1])-2);
+        if (strpos($t,'$') !== false || strpos($t,'\n') !== false || strpos($t,"'") !== false) {
+            $ok++;
+            //printf("%-65s%s (ok)\n", htmlentities(substr($t,0,65)),strlen($t) > 65 ? '...':'   ');
+            echo '<p style="color:green;">"' . htmlentities($t) . '"</p>';
+        } else {
+            echo '<p style="color:red;">"' . htmlentities($t) . '"</p>';
+            $nstr++;
+        }
     }
-  }
 }
 $total=$nstr + $ok;
-echo "\n\n** $total double-quoted strings found in $nfiles\n";
-echo "\n$ok strings ok (var inside)\n$nstr string to single-quote (no var inside)";
+echo "\n\n** $total double-quoted strings found in $nfiles files\n\n";
+echo " - $ok strings ok (containing either \$,' or \\n)\n";
+echo " - $nstr strings that can be single-quoted <span style=\"color:red;\">(the red ones)</span>";

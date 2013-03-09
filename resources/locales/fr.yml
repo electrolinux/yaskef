@@ -2,15 +2,17 @@
 %lang% Snippet named '%name%' deleted: Le fragment %lang% nommé '%name%' a été supprimé
 %lang% Snippet...: Fragment %lang%...
 %name% (%nrows% rows): %name% (%nrows% lignes)
-%username%'s profile: Profile de %username%
+%username%'s profile: Profil de «%username%»
 <h2>Welcome to yaskef !</h2>: <h2>Bienvenue à Yaskef !</h2>
 Account: Compte
+Api Key: ## Api Key **
 Cache have been cleared: Le cache a été vidé
 Cache not completely cleared: Le cache n'a pas été complètement vidé
-Can't delete without 'name' !!: Suppression impossible sans un «nom»
 Can't open file '%filename%' in write mode.: Impossible d'ouvrir le fichier '%filename%' en écriture.
-Can't paste to pastebin without 'code' !!: Copie vers pastebin impossible sans «code»
-Can't save without 'name' and 'code' !!: Sauvegarde impossible sans «nom» ni «code»
+Can't delete without 'name'!: Suppression impossible sans un «nom»
+Can't paste to pastebin without 'code'!: Copie vers pastebin impossible sans «code»
+Can't save without 'name' and 'code'!: Sauvegarde impossible sans «nom» ni «code»
+Cancel: Annuler
 Clear cache: Vider le cache
 Closing php tag, use or namespace found. Syntax check disabled.: Balise de fermeture php, «use» ou «namespace» trouvé. La vérification de syntaxe est désactivée.
 Code: ## Code **
@@ -24,6 +26,7 @@ Database already created.: La base de données est déjà créée.
 Database configuration created: La configuration de la base de données est créée.
 Database ready: La base de données est prête
 Delete: Supprimer
+Editor style: Style de l'éditeur
 Encoding password: Encodage d'un mot de passe
 Error deleting snippet !!: Erreur en supprimant le fragment !!
 Error executing your code: Erreur en exécutant votre code
@@ -31,7 +34,10 @@ Error processing your data !!: Erreur en traitant vos données !!
 Files deleted: Fichiers supprimés
 Files not deleted: Fichiers non supprimés
 First User configured ok.: Le premier utilisateur est créé
+General Options: Options générales
+General options saved: Options générales enregistrées
 Help: Aide
+Home page: Page d'accueil
 Homepage: Accueil
 Javascript: ## Javascript **
 Keep me logged in: Se souvenir de moi
@@ -44,6 +50,7 @@ Name: Nom
 Next: Suivant
 No pastebin.com profile infos changed: Aucune information de profile pastebin.com n'a changé
 No user associated with this PasteBin: Aucun utilisateur associé à ce PasteBin
+OK: ## OK **
 PHP: ## PHP **
 PHP infos: Infos PHP
 Password: Mot de passe
@@ -52,17 +59,25 @@ Password encoder: Encodeur de mot de passe
 Paste expiration: Expiration de la copie
 Paste exposure: Confidentialité de la copie
 Paste to pastebin.com: Copier sur pastebin.com
+Pastebin Options: Options Pastebin
+Pastebin option saved: Options Pastebin enregistrées
 Please confirm snippet deletion: Veuillez confirmer la suppression du fragment
+Please copy/paste the content below to the file '%filename%', or make it writable by the web server user.: Merci de copier/coller le contenu ci-dessous dans le fichier '%filename%', ou rendez le fichier modifiable par le compte du serveur web.
 Please login: Veuillez vous identifier
 Pre-formatted result: Résultats pré-formatés
 Profile: Profil
+Profile page: Page du profil
+Reload snippets ?: Recharger les fragments ? **
+Reload snippets list: Recharger la liste des fragments
 Results: Résultats
 SQL: ## SQL **
 SQLite driver need a path for the db: Le pilote SQlite a besoin d'un chemin pour sa base de donnée
 Save: Enregistrer
 Save as: Enregistrer sous
 Send: Envoyer
+Startup page: Page de démarrage
 Test: Tester
+This will <strong>erase</strong> your personnals saved snippets.<br/>Ok for that ?: Ceci va <strong>effacer</strong> vos fragments personnels enregistrés.<br/>Ok pour ça ?
 Tools: Outils
 Translatable strings: Chaînes traduisibles
 Translation '%locale%' saved in %filename%.: Traduction '%locale%' enregistrée dans %filename%.

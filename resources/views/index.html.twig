@@ -2,17 +2,14 @@
 {% set active = active|default('php') %}
 {% set lang = active|default('php') %}
 {% set cmmode = lang == 'js' ? 'javascript' : lang == 'sql' ? 'text/x-sql' : lang %}
+{% set editor_css = editor_css|default('default') %}
 
 {% block style %}
 {{ parent() }}
     <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/codemirror.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/neat.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/cobalt.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/elegant.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/eclipse.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/monokai.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/solarized.css">
-    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/ambiance.css">
+    {% if editor_css != 'default' %}
+    <link rel="stylesheet" href="{{ app.request.basepath }}/js/libs/codemirror/{{ editor_css}}.css">
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -93,14 +90,15 @@
 
 
 <script type="text/javascript">
-    var cmMode="{{ cmmode }}";
+    var cmMode="{{ cmmode }}",
+        cmTheme="{{ editor_style }}";
 {% verbatim %}
     $(document).ready(function () {
 
         // codemirror editor
         var cmEditor = CodeMirror.fromTextArea(document.getElementById("form_code"), {
             lineNumbers: true,
-            theme: 'solarized',
+            theme: cmTheme,
             matchBrackets: true,
             //mode: "application/x-httpd-php",
             mode: cmMode,
@@ -113,8 +111,6 @@
         // jquery objects used
         var $needcode = $("button.need-code"),
             $needname = $("button.need-name"),
-            //$formcode = $("#form_code"),
-            //$formcode = cmEditor || $("#form_code"),
             $formname = $("#form_name"),
             // snippets
             codes=Array(),
@@ -122,12 +118,7 @@
             comments=Array();
 
         var setEnabled = function() {
-            /*if($formcode.val() == '') {
-                $needcode.attr('disabled','disabled');
-            } else {
-                $needcode.removeAttr('disabled');
-            }*/
-            if(cmEditor.getValue() == '') {
+            if(cmEditor.getValue() == '<' + '?php\n') {
                 $needcode.attr('disabled','disabled');
             } else {
                 $needcode.removeAttr('disabled');

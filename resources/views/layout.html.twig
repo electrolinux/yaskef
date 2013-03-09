@@ -50,6 +50,7 @@
                             <li><a href="{{ path('translations') }}">{{ 'Translations'|trans }}</a></li>
                             <li><a href="{{ path('encode') }}">{{ 'Password encoder'|trans }}</a></li>
                             <li><a href="{{ path('phpinfo') }}">{{ 'PHP infos'|trans }}</a></li>
+                            <li><a  data-toggle="modal" href="#windowModalDialog" #" id="reloadSnippets">{{ 'Reload snippets list'|trans }}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown{% if 'account' == active %} active{% endif %}">
@@ -92,13 +93,45 @@
                {% for message in app.session.getFlashBag.get(alert) %}
                     <div class="alert alert-{{ alert }}" >
                         <button class="close" data-dismiss="alert">×</button>
-                        {{ message|trans }}
+                        {{ message|raw }}
                     </div>
                 {% endfor %}
             {% endfor %}
             {% block content %}
+
             {% endblock %}
         </div>
     </div>
+    {% block modal %}
+    <div id="windowModalDialog" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="windowTitleLabel" aria-hidden="true">
+        <div class="modal-header">
+            <a href="#" class="close" data-dismiss="modal">&times;</a>
+            <h3>{% block modalTitle %}{{ 'Reload snippets ?'|trans }}{% endblock %}</h3>
+        </div>
+        <div class="modal-body">{% block modalBody %}
+            {{ 'This will <strong>erase</strong> your personnals saved snippets.<br/>Ok for that ?'|trans|raw }}
+            {% endblock %}
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" onclick="closeDialog ();">{{ 'Cancel'|trans }}</a>
+            <a href="#" class="btn btn-primary" onclick="okClicked ();">{{ 'OK'|trans }}</a>
+        </div>
+    </div>
+    {% block modalJs %}
+        <script>
+            var reloadSnippetsUrl="{{ path('reload_snippets') }}";
+            {% verbatim %}
+			function closeDialog () {
+				$('#windowModalDialog').modal('hide');
+            };
+			function okClicked () {
+				// TODO: make a POST request
+                window.location.href=reloadSnippetsUrl;
+				closeDialog ();
+            };
+            {% endverbatim %}
+        </script>
+    {% endblock %}
+    {% endblock modal %}
 </body>
 </html>

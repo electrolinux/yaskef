@@ -123,6 +123,15 @@ class CodeController implements ControllerProviderInterface
 
     }
 
+    private function getUserPreferences($app,$username)
+    {
+        $stmt = $app['db']->executeQuery('SELECT preferences FROM users WHERE username = ?', array(strtolower($username)));
+        if (!$user = $stmt->fetch()) {
+            throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
+        }
+        return unserialize($user['preferences']);
+    }
+
     protected function handleRequest($app,$lang='php')
     {
         $snippet = $this->getSnippet($lang);
@@ -161,12 +170,12 @@ class CodeController implements ControllerProviderInterface
                 } elseif ($save) {
                     if (!empty($name) && !empty($code)) {
                         $snippet->add($name,$code,$comment,$html);
-                        $resultat=$app['translator']->trans("snippet '%name%' saved.",array('%name%'=>$name));
+                        $resultat=$app['translator']->trans('snippet \'%name%\' saved.',array('%name%'=>$name));
                         $app['session']->getFlashBag()->add('success', $resultat);
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
-                        $msg = $app['translator']->trans("Can't save without 'name' and 'code' !!");
+                        $msg = $app['translator']->trans('Can\'t save without \'name\' and \'code\'!');
                         $app['session']->getFlashBag()->add('error', $msg);
                     }
                 } elseif ($pastebin) {
@@ -181,12 +190,12 @@ class CodeController implements ControllerProviderInterface
 
                         return $app->redirect($this->getRedirect($lang,array('name'=>$name)));
                     } else {
-                        $msg = $app['translator']->trans("Can't paste to pastebin without 'code' !!");
+                        $msg = $app['translator']->trans('Can\'t paste to pastebin without \'code\'!');
                         $app['session']->getFlashBag()->add('error', $msg);
                     }
                 } elseif ($del) {
                     if (empty($name)) {
-                        $msg = $app['translator']->trans("Can't delete without 'name' !!");
+                        $msg = $app['translator']->trans('Can\'t delete without \'name\'!');
                         $app['session']->getFlashBag()->add('error', $msg);
                     } else {
                         $url = $app['url_generator']->generate('del_snippet',
@@ -210,6 +219,14 @@ class CodeController implements ControllerProviderInterface
 
         $bloc_resultat = "\n<div class=\"result\">$resultat</div>\n";
         $mode = strtoupper($lang);
+        $username = $app['security']->getToken()->getUsername();
+        $prefs = $this->getUserPreferences($app,$username);
+        $editor_style = isset($prefs['editor_style']) ? $prefs['editor_style'] : 'default';
+        if (substr($editor_style,0,strlen('solarized')) == 'solarized') {
+            $editor_css = 'solarized';
+        } else {
+            $editor_css = $editor_style;
+        }
         return $app['twig']->render('index.html.twig',array(
             'active' => $lang,
             'page_title' => $app['translator']->trans('Yaskef versatile interpretor, %mode% mode',array('%mode%'=>$mode)),
@@ -218,6 +235,8 @@ class CodeController implements ControllerProviderInterface
             'bloc_resultat' => $bloc_resultat,
             'index' => $index,
             'url' => $app['url_generator']->generate($lang),
+            'editor_css' => $editor_css,
+            'editor_style' => $editor_style,
             )
         );
     }

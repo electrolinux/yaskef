@@ -21,6 +21,7 @@ $users->addColumn('username', 'string', array('length' => 127));
 $users->addUniqueIndex(array('username'),'username_idx');
 $users->addColumn('password', 'string', array('length' => 255));
 $users->addColumn('roles', 'string', array('length' => 255));
+$users->addColumn('preferences','text',array('notNull'=>false,'default' => 'a:0:{}'));
 
 $pastebin = $schema->createTable('pastebin');
 $pastebin->addColumn('user_id', 'integer', array('unsigned' => true));
@@ -41,6 +42,17 @@ $snippet->addColumn('html', 'text',array('notNull'=>false));
 $snippet->addColumn('rows', 'integer');
 $snippet->addColumn('level', 'integer',array('default'=>0));
 $snippet->addColumn('comment', 'text',array('notNull' => false));
+$snippet->addColumn('pre','boolean',array('default' => false));
 $snippet->addUniqueIndex(array('name','lang'),'namelang_idx');
+
+/*
+$prefs = $schema->createTable('preferences');
+$prefs->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
+$prefs->addColumn('user_id', 'integer', array('unsigned' => true));
+$prefs->setPrimaryKey(array('id','user_id'));
+$prefs->addColumn('name','string',array('length'=>50));
+$prefs->addColumn('val','text',array('notNull'=>false));
+$prefs->addUniqueIndex(array('user_id','name'),'userpref_idx');
+*/
 
 return $schema;
