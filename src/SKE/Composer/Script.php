@@ -10,8 +10,9 @@ class Script
         chmod('resources/log', 0777);
         chmod('web/assets', 0777);
         chmod('console', 0500);
-        touch('resources/config/db_config.php');
+        copy('resources/config/db_config.php.dist','resources/config/db_config.php');
         chmod('resources/config/db_config.php',0666);
+        chmod('ressources/db',0777);
         exec('php console assetic:dump');
     }
 }

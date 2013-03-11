@@ -401,18 +401,18 @@ $app->match('/{_locale}/delete_snippet', function() use ($app) {
  *--------------------------------------------------------------------*/
 $app->match('/{_locale}/reload_snippets', function() use ($app) {
     $schema = $app['db']->getSchemaManager();
-    if (!$schema->tablesExist('snippet')) {
+    if (!$schema->tablesExist('snippets')) {
         throw new \Exception("table snippet don't exists !!");
     }
     $db = $app['db'];
-    $db->executeQuery('DELETE FROM snippet');
+    $db->executeQuery('DELETE FROM snippets');
 
     $finder = new Finder();
     $finder->files()
         ->ignoreVCS(true)
         ->name('*.txt')
         ->notName('*~')
-        ->in(__DIR__.'/../resources/db/snippets')
+        ->in(__DIR__.'/../resources/snippets')
     ;
     $php = new Snippet($db);
     $sql = new SnippetSql($db);
