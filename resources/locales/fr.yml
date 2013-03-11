@@ -43,18 +43,14 @@ Javascript: ## Javascript **
 Keep me logged in: Se souvenir de moi
 Login: S'identifier
 Logout: Se déconnecter
-Modifications saved: Les modifications ont été enregistrées
 More: Plus
 MySQL need a least a hostname, a database name and a username: MySQL a besoin d'au moins un nom d'hôte, un nom de base de donnée et un utilisateur
-Name: Nom
 Next: Suivant
-No pastebin.com profile infos changed: Aucune information de profile pastebin.com n'a changé
 No user associated with this PasteBin: Aucun utilisateur associé à ce PasteBin
 OK: ## OK **
 PHP: ## PHP **
 PHP infos: Infos PHP
 Password: Mot de passe
-Password changed: Mot de passe changé
 Password encoder: Encodeur de mot de passe
 Paste expiration: Expiration de la copie
 Paste exposure: Confidentialité de la copie
@@ -74,6 +70,7 @@ SQL: ## SQL **
 SQLite driver need a path for the db: Le pilote SQlite a besoin d'un chemin pour sa base de donnée
 Save: Enregistrer
 Save as: Enregistrer sous
+Select a snippet: Sélectionner un fragment
 Send: Envoyer
 Startup page: Page de démarrage
 Test: Tester

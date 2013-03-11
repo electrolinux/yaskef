@@ -18,7 +18,7 @@ class Installer implements ControllerProviderInterface
     private $app;
     private $tables = array(
         'users',
-        'snippet',
+        'snippets',
         'pastebin',
     );
 
@@ -54,6 +54,7 @@ class Installer implements ControllerProviderInterface
             case 'dbconfig': return $this->stepDbConfig($app);
             case 'dbcreate': return $this->stepCreateDb($app);
             case 'schemaload': return $this->stepLoadSchema($app);
+            case 'snippetsload': return $this->stepLoadSnippets($app);
             case 'userconfig': return $this->stepUserConfig($app);
             default:
                 die("unknow step: '$step'");
@@ -361,7 +362,7 @@ EOM;
             return false;
         }
         try {
-            $res = $db->fetchAll('SELECT * FROM snippet');
+            $res = $db->fetchAll('SELECT * FROM snippets');
         } catch (DBALException $e) {
             //$this->error =  $e->getMessage();
             return false;

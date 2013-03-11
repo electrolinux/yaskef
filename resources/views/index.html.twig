@@ -16,58 +16,41 @@
     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
         {% set api_key = app.pastebin.getApiUserKey() %}
         {% set lang = active|default('php') %}
-
-        <div class="accordion" id="accordion">
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+    <div class="span6">
                 {{ 'Code'|trans }}
-                </a>
+        <form action="{{ url }}" method="post" novalidate {{ form_enctype(form) }} class="form-horizontal">
+            <div id="form" class="accordion">
+                <div class="control-group">
+                    {{ form_widget(form.code) }}
                 </div>
-                <div id="collapseOne" class="accordion-body collapse in">
-                    <div class="accordion-inner cote_code">
-                    <form action="{{ url }}" method="post" novalidate {{ form_enctype(form) }} class="form-horizontal">
-                        <div id="form" class="accordion">
-                            <div class="control-group">
-                                {{ form_widget(form.code) }}
-                            </div>
-                            <div class="accordion-group control-group">
-                                <div class="accordion-heading">
-                                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#collapseMore">{{ 'More'|trans }}</a>
-                                </div>
-                                <div id="collapseMore" class="accordion-body collapse">
-                                    {{ form_rest(form) }}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="submit" name="test" value="test" class="btn btn-primary need-code">{{ 'Test'|trans }}</button>
-                            <button type="submit" name="save" value="save" class="btn need-code need-name">{{ 'Save'|trans }}</button>
-                            <button type="submit" name="del" value="del" class="btn need-code need-name">{{ 'Delete'|trans }}</button>
-                            {% if api_key %}
-                            <button type="submit" name="pastebin" value="pastebin" class="btn need-code need-name">{{ 'Paste to pastebin.com'|trans }}</button>
-                            {% endif %}
-                        </div>
-                    </form>
+                <div class="accordion-group control-group">
+                    <div class="accordion-heading">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#form" href="#collapseMore">{{ 'More'|trans }}</a>
+                    </div>
+                    <div id="collapseMore" class="accordion-body collapse">
+                        {{ form_rest(form) }}
                     </div>
                 </div>
             </div>
 
-            <div class="accordion-group">
-                <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                {{ 'Results'|trans }}
-                </a>
-                </div>
-                <div id="collapseTwo" class="accordion-body collapse in">
-                    <div class="accordion-inner cote_resultat">
-
-                    {{ bloc_resultat|raw }}
-                    </div>
-                </div>
+            <div class="form-actions">
+                <button type="submit" name="test" value="test" class="btn btn-primary need-code">{{ 'Test'|trans }}</button>
+                <button type="submit" name="save" value="save" class="btn need-code need-name">{{ 'Save'|trans }}</button>
+                <button type="submit" name="del" value="del" class="btn need-code need-name">{{ 'Delete'|trans }}</button>
+                {% if api_key %}
+                <button type="submit" name="pastebin" value="pastebin" class="btn need-code need-name">{{ 'Paste to pastebin.com'|trans }}</button>
+                {% endif %}
             </div>
-        </div><!-- #accordion -->
+        </form>
+    </div>
+
+    <div class="span6">
+        <h4>{{ 'Results'|trans }}{% if name|default('') %}<span class="snippet-name">{{ name }}</span>{% endif %}</h4>
+        <div class="cote_resultat">
+
+        {{ bloc_resultat|raw }}
+        </div>
+    </div>
 
     {% else %}
         {# the firewall prevent accessing this #}
@@ -118,7 +101,8 @@
             comments=Array();
 
         var setEnabled = function() {
-            if(cmEditor.getValue() == '<' + '?php\n') {
+            if( (cmMode == 'php' && cmEditor.getValue() == '<' + '?php\n') ||
+                cmEditor.getValue() == '' ){
                 $needcode.attr('disabled','disabled');
             } else {
                 $needcode.removeAttr('disabled');

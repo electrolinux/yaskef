@@ -104,7 +104,7 @@ class CodeController implements ControllerProviderInterface
                 'choices'  => $choices,
                 'multiple' => false,
                 'expanded' => false,
-                'label' => $this->app['translator']->trans('Name'),
+                'label' => $this->app['translator']->trans('Select a snippet'),
             ))
             ->add('comment','textarea', array(
                 'label' => $this->app['translator']->trans('Comments'),
@@ -138,6 +138,7 @@ class CodeController implements ControllerProviderInterface
         list($options,$snippets) = $snippet->getOptionsList($app);
 
         $resultat='';
+        $name='';
         $index=0;
         if ( ($name = $app['request']->get('name')) ) {
             $index = array_search($name,array_keys($snippets));
@@ -237,6 +238,7 @@ class CodeController implements ControllerProviderInterface
             'url' => $app['url_generator']->generate($lang),
             'editor_css' => $editor_css,
             'editor_style' => $editor_style,
+            'name' => $name,
             )
         );
     }

@@ -28,7 +28,7 @@ class Snippet
         $qlang = $this->qlang;
         try {
             $res = $db->fetchAll("SELECT id, name, code, rows, comment, html
-                FROM snippet WHERE lang=$qlang ORDER BY name");
+                FROM snippets WHERE lang=$qlang ORDER BY name");
             if ($res) {
                 return $res;
             }
@@ -53,7 +53,7 @@ class Snippet
         $lignes = preg_split("/(\n|\r)+/",$code);
         $rows=count($lignes);
         try {
-            $res = $db->executeQuery("INSERT INTO snippet
+            $res = $db->executeQuery("INSERT INTO snippets
                 (name,lang,code,rows,comment,html)
                 VALUES ($qname,$qlang,$qcode,$rows,$qcomment,$qhtml)");
             if ($res) {
@@ -79,7 +79,7 @@ class Snippet
             $qhtml = empty($html) ? null : $db->quote($html);
             $_rows = preg_split("/(\n|\r)+/",$code);
             $rows=count($_rows);
-            $res = $db->executeUpdate("UPDATE snippet
+            $res = $db->executeUpdate("UPDATE snippets
                 SET code = $qcode, rows = $rows,
                 comment = $qcomment,
                 html = $qhtml

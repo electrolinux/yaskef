@@ -32,18 +32,18 @@ $pastebin->addColumn('api_key','string',array('length'=>32,'notNull'=>false));
 $pastebin->addColumn('exposure','integer',array('default' => 0));//0=public 1=unlisted 2=private
 $pastebin->addColumn('expiration','string',array('default' => '1H'));//N = Never, 10M = 10 Minutes,1H = 1 Hour,1D = 1 Day,1M = 1 Month
 
-$snippet = $schema->createTable('snippet');
-$snippet->addColumn('id','integer',array('unsigned'=>true,'autoincrement'=>true));
-$snippet->setPrimaryKey(array('id'));
-$snippet->addColumn('name','string',array('length'=>50));
-$snippet->addColumn('lang', 'string',array('length'=>25, 'default'=> 'php'));
-$snippet->addColumn('code', 'text');
-$snippet->addColumn('html', 'text',array('notNull'=>false));
-$snippet->addColumn('rows', 'integer');
-$snippet->addColumn('level', 'integer',array('default'=>0));
-$snippet->addColumn('comment', 'text',array('notNull' => false));
-$snippet->addColumn('pre','boolean',array('default' => false));
-$snippet->addUniqueIndex(array('name','lang'),'namelang_idx');
+$snippets = $schema->createTable('snippets');
+$snippets->addColumn('id','integer',array('unsigned'=>true,'autoincrement'=>true));
+$snippets->setPrimaryKey(array('id'));
+$snippets->addColumn('name','string',array('length'=>50));
+$snippets->addColumn('lang', 'string',array('length'=>25, 'default'=> 'php'));
+$snippets->addColumn('code', 'text');
+$snippets->addColumn('html', 'text',array('notNull'=>false));
+$snippets->addColumn('rows', 'integer');
+$snippets->addColumn('level', 'integer',array('default'=>0));
+$snippets->addColumn('comment', 'text',array('notNull' => false));
+$snippets->addColumn('pre','boolean',array('default' => false));
+$snippets->addUniqueIndex(array('name','lang'),'namelang_idx');
 
 /*
 $prefs = $schema->createTable('preferences');

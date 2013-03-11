@@ -30,9 +30,9 @@
 <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
     {% set active = active|default(null) %}
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
-            <div class="container">
+            <div class="container-fluid">
                 <a class="brand" href="{{ path('homepage') }}"
                     title="Yet Another Silex-Kitchen-Edition Fork !">{{ 'Yaskef !'|trans }}</a>
                 <div class="nav-collapse">
@@ -76,18 +76,17 @@
                         <li class="{% if 'doc' == active %} active{% endif %}"><a href="{{ path('doc') }}">{{ 'Help'|trans }}</a></li>
                         {% set route = app.request.attributes.get('_route') %}
                         {% if route  == 'login' %}{% set route = 'homepage' %}{% endif %}
-                        <li><a href="{{ path(route,{'_locale':'fr'}) }}">
-                            <img src="{{ app.request.basepath }}/assets/img/fr.png" alt="fr"/></a></li>
-                        <li><a href="{{ path(route,{'_locale':'en'}) }}">
-                            <img src="{{ app.request.basepath }}/assets/img/en.png" alt="en"/></a></li>
+                        <li><a href="{{ path(route,{'_locale':'fr'}) }}" class="locale-switch fr">&nbsp;</a></li>
+                        <li><a href="{{ path(route,{'_locale':'en'}) }}" class="locale-switch en">&nbsp;</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
         </div>
     </div>
 
-    <div class="container">
-        <div id="main" role="main" class="container">
+    <div class="container-fluid">
+        <div class="row-fluid">
+        <div class="span12">
             {% set alertTypeAvaillable = [ 'info', 'success', 'warning', 'error'] %}
             {% for alert in alertTypeAvaillable %}
                {% for message in app.session.getFlashBag.get(alert) %}
@@ -97,9 +96,12 @@
                     </div>
                 {% endfor %}
             {% endfor %}
-            {% block content %}
-
-            {% endblock %}
+        </div>
+        </div>
+        <div id="main" role="main" class="row-fluid">
+        {% block main_content %}
+                {% block content %}{% endblock %}
+            {% endblock main_content %}
         </div>
     </div>
     {% block modal %}

@@ -1,5 +1,7 @@
 <?php
 
+use Oclane\Installer;
+
 use Silex\Provider\FormServiceProvider;
 use Silex\Provider\HttpCacheServiceProvider;
 use Silex\Provider\MonologServiceProvider;
@@ -52,12 +54,25 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
         ),
         'assetic.filters' => $app->protect(function($fm) use ($app) {
             $fm->set('lessphp', new Assetic\Filter\LessphpFilter());
+//            $fm->set('yui_css', new Assetic\Filter\Yui\CssCompressorFilter(
+//                $app['assetic.filter.yui_compressor.path']
+//            ));
+//            $fm->set('cssembed', new Assetic\Filter\CssEmbedFilter(
+//                $app['assetic.filter.cssembed.path']
+//            ));
+//            $fm->set('yui_js', new Assetic\Filter\Yui\JsCompressorFilter(
+//                $app['assetic.filter.yui_compressor.path']
+//            ));
         }),
         'assetic.assets' => $app->protect(function($am, $fm) use ($app) {
             $am->set('styles', new Assetic\Asset\AssetCache(
                 new Assetic\Asset\GlobAsset(
                     $app['assetic.input.path_to_css'],
-                    array($fm->get('lessphp'))
+                    array(
+                        $fm->get('lessphp'),
+//                        $fm->get('cssembed'),
+//                        $fm->get('yui_css')
+                    )
                 ),
                 new Assetic\Cache\FilesystemCache($app['assetic.path_to_cache'])
             ));
@@ -65,7 +80,9 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 
             $am->set('scripts', new Assetic\Asset\AssetCache(
                 new Assetic\Asset\GlobAsset(
-                    $app['assetic.input.path_to_js']
+                    $app['assetic.input.path_to_js'],
+//                    array($fm->get('yui_js'))
+                    array()
                 ),
                 new Assetic\Cache\FilesystemCache($app['assetic.path_to_cache'])
             ));
@@ -77,7 +94,7 @@ if (isset($app['assetic.enabled']) && $app['assetic.enabled']) {
 $app->register(new Silex\Provider\DoctrineServiceProvider());
 
 // check db
-if (!Oclane\Installer::checkDatabase($app)) {
+if (!Installer::checkDatabase($app)) {
     // install
     $app['security.firewalls'] = $app['install_firewalls'];
     $app['security.access_rules'] = $app['install_access_rules'];

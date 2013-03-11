@@ -1,5 +1,7 @@
 <?php
 
+namespace Oclane;
+
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -7,14 +9,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Doctrine\DBAL\DriverManager;
 
-use Oclane\CreateUserCommand;
+//use Oclane\CreateUserCommand;
 
-$console = new Application('Yaskef console', '0.1');
+$console = new Application('Yaskef console', '1.0.0-rc1');
 
 $console
     ->register('assetic:dump')
     ->setDescription('Dumps all assets to the filesystem')
     ->setCode(function (InputInterface $input, OutputInterface $output) use ($app) {
+        $app['debug']=true;
         $dumper = $app['assetic.dumper'];
         if (isset($app['twig'])) {
             $dumper->addTwigAssets();
@@ -158,7 +161,7 @@ EOT
 $console->add(new CreateUserCommand('user:create',$app));
 
 $console
-    ->register('snippet:load')
+    ->register('snippets:load')
     ->setDescription('Load code snippet examples')
     ->addOption('force', null, InputOption::VALUE_NONE, 'Set this parameter to execute this action')
     ->setHelp(<<<EOT

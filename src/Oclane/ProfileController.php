@@ -147,7 +147,7 @@ class ProfileController implements ControllerProviderInterface
         /*------------------------------------------------------------*
          * preferences
          *------------------------------------------------------------*/
-        $ctrl->match('/{_locale}/profile', function (Application $app) {
+        $ctrl->match('/{_locale}', function (Application $app) {
 
             $user = $app['security']->getToken();
             $form = $this->getForm($app,$user->getUsername());

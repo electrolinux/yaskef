@@ -40,16 +40,16 @@
                         {% set route = app.request.attributes.get('_route') %}
                         {% if route  == 'login' %}{% set route = 'homepage' %}{% endif %}
                         <li><a href="{{ path(route,{'_locale':'fr'}) }}">
-                            <img src="{{ app.request.basepath }}/assets/img/fr.png" alt="fr"/></a></li>
+                            <img src="{{ app.request.basepath }}/img/fr.png" alt="fr"/></a></li>
                         <li><a href="{{ path(route,{'_locale':'en'}) }}">
-                            <img src="{{ app.request.basepath }}/assets/img/en.png" alt="en"/></a></li>
+                            <img src="{{ app.request.basepath }}/img/en.png" alt="en"/></a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <div class="container-fluid">
         <div id="main" role="main" class="container">
             {% set alertTypeAvaillable = [ 'info', 'success', 'warning', 'error'] %}
             {% for alert in alertTypeAvaillable %}

@@ -2,6 +2,7 @@ resources/cache/*
 resources/log/*
 resources/db/*.db
 resources/config/db_config.php
+resources/java/*
 vendor/
 web/assets/*
 __*

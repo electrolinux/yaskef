@@ -10,18 +10,18 @@ use Symfony\Component\Finder\Finder;
 use Doctrine\DBAL\Schema\Table;
 
 $schema = $app['db']->getSchemaManager();
-if (!$schema->tablesExist('snippet')) {
-    throw new \Exception("table snippet don't exists !!");
+if (!$schema->tablesExist('snippets')) {
+    throw new \Exception("table snippets don't exists !!");
 }
 $db = $app['db'];
-$db->executeQuery('DELETE FROM snippet');
+$db->executeQuery('DELETE FROM snippets');
 
 $finder = new Finder();
 $finder->files()
     ->ignoreVCS(true)
     ->name('*.txt')
     ->notName('*~')
-    ->in(__DIR__.'/snippets')
+    ->in(__DIR__.'/../snippets')
 ;
 $php = new Snippet($db);
 $sql = new SnippetSql($db);

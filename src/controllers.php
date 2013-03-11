@@ -45,7 +45,7 @@ if (!Installer::checkDatabase($app)) {
 //$app->register(new Silex\Provider\SecurityServiceProvider());
 
 $app->mount('/code', new CodeController());
-$app->mount('/prf', new ProfileController());
+$app->mount('/profile', new ProfileController());
 
 $app['controllers']
     ->value('_locale','en')
