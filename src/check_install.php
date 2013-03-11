@@ -30,8 +30,16 @@ class Check
         // Check if the vendor folder is present. If not, this is most likely because
         // the user checked out the repo from Git, without running composer.
         if (!file_exists(__DIR__.'/../vendor/autoload.php')) {
-            Check::exitError("The file <code>vendor/autoload.php</code> doesn't exist. Make sure " .
-                "you've installed the Silex/Yaskef components with Composer. Please read the docs.");
+            $url = 'http://getcomposer.org/';
+            if (PHP_OS == 'WINNT') {
+                $urlwin = 'https://s3-eu-west-1.amazonaws.com/johnstevenson/composer/Composer-Setup.2.7.exe';
+                $win = "You can find a binary installer for composer at <a href=\"$urlwin\">$urlwin</a>.";
+            } else {
+                $win='';
+            }
+            Check::exitError("The file <code>vendor/autoload.php</code> doesn't exist. Make sure
+                you've installed the Silex/Yaskef components with Composer. <br/>
+                More info on <a href=\"$url\">composer here</a>. $win");
         }
 
         // 2. checks that don't need a server restart, just reloading the page is enough

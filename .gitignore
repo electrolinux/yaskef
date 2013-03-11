@@ -4,5 +4,6 @@ resources/db/*.db
 resources/config/db_config.php
 resources/java/*
 vendor/
-web/assets/*
+web/assets/css/*
+web/assets/js/*
 __*

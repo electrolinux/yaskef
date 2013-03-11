@@ -46,14 +46,15 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                            <li><a href="{{ path('clearcache') }}">{{ 'Clear cache'|trans }}</a></li>
-                            <li><a href="{{ path('translations') }}">{{ 'Translations'|trans }}</a></li>
-                            <li><a href="{{ path('encode') }}">{{ 'Password encoder'|trans }}</a></li>
-                            <li><a href="{{ path('phpinfo') }}">{{ 'PHP infos'|trans }}</a></li>
-                            <li><a  data-toggle="modal" href="#windowModalDialog" #" id="reloadSnippets">{{ 'Reload snippets list'|trans }}</a></li>
+                            <li><a href="{{ path('clearcache') }}"><i class="icon-trash"></i> {{ 'Clear cache'|trans }}</a></li>
+                            <li><a href="{{ path('translations') }}"><i class="icon-flag"></i> {{ 'Translations'|trans }}</a></li>
+                            <li><a href="{{ path('encode') }}"><i class="icon-cog"></i> {{ 'Password encoder'|trans }}</a></li>
+                            <li><a href="{{ path('phpinfo') }}"><i class="icon-info-sign"></i> {{ 'PHP infos'|trans }}</a></li>
+                            <li><a  data-toggle="modal" href="#windowModalDialog" #" id="reloadSnippets"><i class="icon-refresh"></i> {{ 'Reload snippets list'|trans }}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown{% if 'account' == active %} active{% endif %}">
+
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                     {{ app.security.getToken().getUsername() }}
@@ -64,10 +65,10 @@
                             </a>
                             <ul class="dropdown-menu">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                    <li><a href="{{ path('profile') }}">{{ 'Profile'|trans }}</a></li>
-                                    <li><a href="{{ path('logout') }}">{{ 'Logout'|trans }}</a></li>
+                                    <li><a href="{{ path('profile') }}"><i class="icon-user"></i> {{ 'Profile'|trans }}</a></li>
+                                    <li><a href="{{ path('logout') }}"><i class="icon-off"></i> {{ 'Logout'|trans }}</a></li>
                                 {% else %}
-                                    <li><a href="{{ path('login') }}">{{ 'Login'|trans }}</a></li>
+                                    <li><a href="{{ path('login') }}"><i class="icon-off"></i> {{ 'Login'|trans }}</a></li>
                                 {% endif %}
                             </ul>
                         </li>
@@ -88,9 +89,11 @@
         <div class="row-fluid">
         <div class="span12">
             {% set alertTypeAvaillable = [ 'info', 'success', 'warning', 'error'] %}
+            {% set alertIcon = { 'info':'icon-info-sign', 'success':'icon-ok-sign', 'warning':'icon-warning-sign', 'error':'icon-exclamation-sign'} %}
             {% for alert in alertTypeAvaillable %}
+                {% set icon=alertIcon[alert] %}
                {% for message in app.session.getFlashBag.get(alert) %}
-                    <div class="alert alert-{{ alert }}" >
+                    <div class="alert alert-{{ alert }}" ><i class="{{ icon }}"></i>
                         <button class="close" data-dismiss="alert">×</button>
                         {{ message|raw }}
                     </div>
